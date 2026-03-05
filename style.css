@@ -1,0 +1,86 @@
+:root {
+    --bg-color: #0a0b0d;
+    --panel-color: #161b22;
+    --accent-color: #58a6ff;
+    --neon-green: #7ee787;
+    --neon-red: #ff7b72;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: #c9d1d9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.glass-panel {
+    background: rgba(22, 27, 34, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid #30363d;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 1000px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.glow-text {
+    text-align: center;
+    letter-spacing: 5px;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+}
+
+.glow-text span { color: white; }
+
+.status { text-align: center; font-size: 12px; margin-bottom: 20px; }
+.online { color: var(--neon-green); font-weight: bold; }
+
+.editor-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.box { flex: 1; display: flex; flex-direction: column; }
+label { font-size: 10px; margin-bottom: 5px; color: #8b949e; }
+
+textarea {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    height: 350px;
+    color: var(--neon-green);
+    padding: 15px;
+    font-family: 'Consolas', monospace;
+    resize: none;
+    transition: 0.3s;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 8px rgba(88, 166, 255, 0.2);
+}
+
+.actions { display: flex; gap: 10px; }
+
+button {
+    flex: 1;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary { background: var(--accent-color); color: white; }
+.btn-primary:hover { background: #1f6feb; transform: translateY(-2px); }
+
+.btn-secondary { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+.btn-secondary:hover { background: #30363d; }
