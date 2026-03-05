@@ -1,72 +1,66 @@
-# 🛡️ Pobfus v1.0 | The Monolith
-### *High-Density Lua Virtualization & Control-Flow Flattening*
+# 🛡️ Pobfus v1.0.6 | The Monolith
+### *High-Density Virtualization & Dynamic Slop Injection*
 
-![Version](https://img.shields.io/badge/Version-1.0--Stable-green?style=for-the-badge&logo=github)
-![Build](https://img.shields.io/badge/Build-Success-blue?style=for-the-badge)
-![Status](https://img.shields.io/badge/Security-Hell--Mode-red?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-gray?style=for-the-badge)
+[![Version](https://img.shields.io/badge/Release-v1.0.6--Stable-238636?style=for-the-badge&logo=github)](https://github.com/tenringsofdoom1x/)
+[![Status](https://img.shields.io/badge/Status-Operational-0078D4?style=for-the-badge&logo=statuspage)](https://tenringsofdoom1x.github.io/)
+[![Security](https://img.shields.io/badge/Security-Hell--Mode-critical?style=for-the-badge)](https://github.com/tenringsofdoom1x/)
+[![Engine](https://img.shields.io/badge/Engine-CamBuscate--0.1.1-gray?style=flat-square)](https://github.com/tenringsofdoom1x/)
 
 > [!IMPORTANT]
-> **DEVELOPMENT START:** March 4, 2026  
-> **OFFICIAL RELEASE:** March 5, 2026 (v1.0 Stable)  
+> **OPERATIONS:** RESUMED (STABLE)  
+> **ENGINE CORE:** v1.0.6 High-Density Hex-Table  
 > **AUTHOR:** tenringsofdoom1x
 
-**Pobfus** is a 24-hour sprint project designed to kill the "API-Dependency" era. It transforms readable Lua into a **Fat Hex-Table Brick Wall** using the **CamBuscate 0.1.1** core. No APIs, no keys, just pure client-side virtualization.
+**Pobfus** is a standalone, client-side Lua obfuscator built to eliminate API dependencies. It utilizes a **Brick Wall** methodology, expanding source code by ~600% using randomized junk-bit (slop) injection while maintaining 1:1 logic execution via a localized Virtual Machine.
+
+---
+
+## 📊 Engine Comparison
+
+| Feature | Standard APIs | Old-Gen Obf | **Pobfus v1.0.6** |
+| :--- | :---: | :---: | :---: |
+| **Logic Cleaning** | Manual | None | **Auto-Beautify (Minifier)** |
+| **Variable Mapping** | Static | Variable Rename | **Dynamic Shuffling (JS-Side)** |
+| **Anti-Tamper** | Simple Error | Print Warning | **Encrypted Roast + Thread Lock** |
+| **Analysis Difficulty** | Low | Medium | **High (High-Density Slop)** |
+| **Uptime** | Varies (API Keys) | Server Dependent | **100% (GitHub Pages)** |
+
+---
+
+## 🚀 Pro-Tier Features (v1.0.6)
+
+### 1. 🧹 Integrated Beautifier
+Before the code is smashed into the hex-wall, Pobfus runs a pre-processing pass that strips all comments (`--` and `--[[]]`) and collapses unnecessary whitespace. This ensures the VM only processes functional logic.
+
+### 2. 🧬 Dynamic Variable Shuffling
+The JavaScript engine generates random names for the Lua VM's local registers (`pairs`, `string.char`, `bit32.bxor`) every time the "Protect" button is clicked. No two obfuscations are identical.
+
+### 3. 🧱 High-Density Slop
+Every byte is appended with a 5-character alphanumeric "tail." The VM's dispatcher uses a localized substring filter to ignore the slop at runtime while making the source look like a solid wall of data.
+
+
 
 ---
 
 ## 🏗️ Build Your Own "Pobfus-Type" Engine
-Pobfus isn't just a tool; it's a **Framework**. You can modify the Monolith to create your own branded protector in minutes.
 
-### 1. Customizing the "Fat" Header
-Open `index.html` and locate the `Eb, ob, La...` variable string. Replace these with your own localized constants (e.g., `_v1, _v2, _v3`) to change the visual "weight" of the output.
-
-### 2. Injecting Custom "Hell-Mode" Roasts
-Locate the `_roasts` array. Any text added here is automatically bit-XORed. If a skid tampers with your code, the VM will decrypt and print your custom roast before freezing the thread.
-
-### 3. Adjusting Junk-Bit Entropy
-Find the `Math.random().toString(36)` logic. Changing the substring length (e.g., `(2, 8)` instead of `(2, 5)`) makes the "Brick Wall" wider and more chaotic.
+Pobfus is a framework. To customize your own version of the Monolith:
+1. **Modify `randVar()`:** Change the character set in `script.js` to use special symbols or emojis for variable names.
+2. **Inject Custom Roasts:** Update the `roastMsg` variable in the `run()` function to change the "Anti-Skid" message.
+3. **Adjust Slop Density:** Change `.substring(2, 7)` to a higher range to make the output files even larger and more intimidating.
 
 
 
 ---
 
-## 📊 Feature Comparison (v1.0 Release)
-
-| Feature | Standard APIs | Old-Gen Obf | **Pobfus v1.0** |
-| :--- | :---: | :---: | :---: |
-| **Hosting Cost** | $$$ / Monthly | $ / Server | **$0 (GitHub Pages)** |
-| **Ease of Use** | Hard (API Keys) | Medium | **Easy (Single File)** |
-| **Logic Hiding** | String Encryption | Variable Renaming | **VM Virtualization** |
-| **Tamper Protection** | Error Logs | Print Warning | **Encrypted Roast + Crash** |
-| **Visual "Weight"** | Clean/Small | Readable | **Fat Brick Wall (Intimidating)** |
-
----
-
-## 🚀 Pro-Tier Features
-* **The Fat Header:** Maps 40+ global functions to hide internal Lua calls and break static analysis.
-* **Junk-Bit Injection:** Every byte is protected by a random noise buffer, stripped only at the final execution layer.
-* **Logo-Bound Integrity:** The decryption key is mathematically tied to the ASCII logo length. Modification = Corruption.
-* **Silent Roast Trap:** Encrypted insults triggered only during unauthorized tamper attempts.
-
----
-
-## 🧱 The Logic (Pobfus-Type)
-1. **Bitwise XOR Mapping:** $c_{enc} = c \oplus k$
-2. **Chunky Hex Conversion:** Bytes are converted to Hex and padded with noise.
-3. **Control-Flow Flattening:** The VM uses a `repeat...until` state machine (Dispatcher) to hide the execution order.
-
-
-
----
-
-## 🛠️ Deployment (Single-File Hosting)
-1. **Fork** this repository.
-2. **Upload** your customized `index.html`.
-3. **Enable GitHub Pages** (Settings > Pages > Main Branch).
-4. Your custom obfuscator is live at `https://yourname.github.io/Pobfus`.
+## 🛠️ Deployment
+1. **Fork** the repository.
+2. Ensure `index.html` and `script.js` are in the root directory.
+3. Go to **Settings > Pages** and enable deployment from the `main` branch.
+4. Your obfuscator is live at `https://yourname.github.io/Pobfus/`.
 
 ---
 
 ## ⚠️ Disclaimer
-This tool is for educational purposes regarding code protection and virtualization. Developed by **tenringsofdoom1x**. If the code looks like ȟ̸̨̯̲̝̳͓͎̭͖͊̄̔̽̓̂̋̇̋̀̕̚͜ẹ̷͓̺̰̽̍͛̉̐̔͋̓̚͜l̷̢̨̨̫̼͙̞͉̗͉̖̲̖̞̿̉, it's working as intended.
+Pobfus is designed for educational research into code virtualization and protection. 
+Created by **tenringsofdoom1x**.
