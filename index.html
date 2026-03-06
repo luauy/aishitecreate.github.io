@@ -3,80 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pobfus // Luau Virtualization Studio</title>
+    <title>pobfus // repository</title>
     <style>
-        :root { --bg: #0d1117; --sidebar: #010409; --panel: #161b22; --brd: #30363d; --acc: #58a6ff; --txt: #c9d1d9; --warn: #d29922; --err: #f85149; --succ: #3fb950; }
-        body { background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        :root { --bg: #0a0a0a; --panel: #0d0d0d; --brd: #1a1a1a; --txt: #888; --main: #eee; --acc: #ffffff; }
+        body { 
+            background: var(--bg); color: var(--main); 
+            font-family: "fira code", monospace; margin: 0; 
+            display: flex; height: 100vh; text-transform: lowercase;
+            overflow: hidden;
+        }
+
+        /* sidebar architecture */
+        .sidebar { 
+            width: 280px; background: var(--panel); border-right: 1px solid var(--brd); 
+            padding: 30px; display: flex; flex-direction: column; gap: 15px;
+            z-index: 10;
+        }
+
+        .brand-row { display: flex; align-items: center; gap: 12px; opacity: 0.8; margin-bottom: 10px;}
+        .logo { width: 22px; height: 22px; fill: var(--main); }
+
+        .title-block { margin-bottom: 15px; }
+        .title { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+        .subtitle { font-size: 10px; color: var(--txt); margin-top: 4px; }
+
+        .license-box { 
+            font-size: 9px; color: #333; line-height: 1.4; 
+            padding: 12px; border: 1px solid var(--brd); border-radius: 4px; margin-bottom: 10px;
+        }
+
+        .nav-group { display: flex; flex-direction: column; gap: 8px; }
+        .btn { 
+            background: transparent; border: 1px solid var(--brd); color: var(--txt); 
+            padding: 10px; cursor: pointer; font-family: inherit; font-size: 11px; text-align: left;
+            transition: 0.1s;
+        }
+        .btn:hover { border-color: var(--main); color: var(--main); background: #111; }
+        .btn-run { background: #fff; color: #000; border: none; font-weight: 700; margin-bottom: 5px;}
+        .btn-run:hover { background: #ccc; }
+
+        /* workspace */
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .workspace { display: grid; grid-template-columns: 1fr 1fr; flex: 1; gap: 1px; background: var(--brd); }
+        textarea { 
+            background: var(--bg); border: none; color: var(--main); padding: 25px; 
+            resize: none; outline: none; font-size: 12px; line-height: 1.6;
+            transition: background 0.3s ease;
+        }
         
-        /* Sidebar Styles */
-        .info-panel { width: 300px; background: var(--sidebar); border-right: 1px solid var(--brd); display: flex; flex-direction: column; padding: 24px; box-sizing: border-box; }
-        .info-header { color: var(--acc); font-weight: 600; font-size: 20px; letter-spacing: -0.5px; }
-        .ver-badge { font-size: 10px; background: #238636; color: white; padding: 2px 6px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
-        .status-list { list-style: none; padding: 0; margin: 20px 0; font-size: 12px; }
-        .status-list li { margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .dot { height: 8px; width: 8px; border-radius: 50%; }
+        textarea#in.drag-over { background: #111; outline: 1px dashed var(--txt); }
 
-        /* Main Workspace */
-        .main-content { flex: 1; display: flex; flex-direction: column; }
-        .toolbar { padding: 12px 20px; background: var(--panel); border-bottom: 1px solid var(--brd); display: flex; gap: 12px; align-items: center; }
-        .workspace { display: grid; grid-template-columns: 1fr 1fr; flex: 1; background: var(--brd); gap: 1px; }
-        .editor-container { display: flex; flex-direction: column; background: var(--bg); position: relative; }
-        .label { padding: 8px 16px; font-size: 11px; background: #090c10; color: #8b949e; border-bottom: 1px solid var(--brd); font-family: monospace; }
-        
-        textarea { flex: 1; background: transparent; color: #e6edf3; border: none; padding: 20px; resize: none; outline: none; font-family: 'SFMono-Regular', Consolas, "Liberation Mono", Menlo, monospace; font-size: 13px; line-height: 1.6; }
-        #out { color: var(--warn); background: #0c0e14; }
-
-        /* Components */
-        .btn { padding: 6px 12px; cursor: pointer; border: 1px solid var(--brd); background: #21262d; color: #c9d1d9; font-size: 12px; border-radius: 6px; font-weight: 500; transition: 0.2s; }
-        .btn:hover { background: #30363d; border-color: #8b949e; }
-        .btn-run { background: #238636; color: white; border-color: rgba(240,246,252,0.1); }
-        .btn-run:hover { background: #2ea043; }
-
-        /* Notification System */
-        #notif-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
-        .toast { padding: 12px 16px; background: var(--panel); border: 1px solid var(--brd); border-left: 4px solid var(--acc); color: var(--txt); font-size: 13px; border-radius: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); animation: slideIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; min-width: 250px; }
-        .toast.error { border-left-color: var(--err); }
-        .toast.success { border-left-color: var(--succ); }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        #log { position: fixed; bottom: 20px; right: 20px; font-size: 10px; color: #444; pointer-events: none; }
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
-    <div class="info-panel">
-        <div class="info-header">Pobfus <span class="ver-badge">v1.11.02</span></div>
-        <p style="font-size: 12px; color: #8b949e;">Advanced Luau Virtualizer tailored for Roblox executors.</p>
-        
-        <ul class="status-list">
-            <li><div class="dot" style="background:var(--succ)"></div> Anti-Hook Metatables</li>
-            <li><div class="dot" style="background:var(--succ)"></div> Selective Compression</li>
-            <li><div class="dot" style="background:var(--succ)"></div> Infinite-Loop Honeypot</li>
-            <li><div class="dot" style="background:var(--warn)"></div> Delta/Synapse-Z Optimized</li>
-        </ul>
 
-        <div style="margin-top:auto; font-size: 11px; color: #484f58;">
-            Development skipped Public Beta (0.7-0.8) for maximum decompiler interference.
+    <div class="sidebar">
+        <div class="brand-row">
+            <svg class="logo" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <svg class="logo" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 3c-3.866 0-7 3.134-7 7s3.134 7 7 7 7-3.134 7-7-3.134-7-7-3.134-7-7-3.134-7-7-7zm0 2c2.761 0 5 2.239 5 5s-2.239 5-5 5-5-2.239-5-5 2.239-5 5-5z"/></svg>
+        </div>
+
+        <div class="title-block">
+            <div class="title">pobfus</div>
+            <div class="subtitle">v1.11.05 godly runtime</div>
+        </div>
+
+        <div class="license-box">
+            mit license<br><br>
+            permission is granted to process logic streams as-is.
+        </div>
+
+        <div class="nav-group">
+            <button class="btn btn-run" id="go">execute process</button>
+            <button class="btn" onclick="document.getElementById('up').click()">upload file</button>
+            <button class="btn" id="cp">copy output</button>
+            <button class="btn" id="dl">download .lua</button>
+            <button class="btn" id="cl">purge buffer</button>
+            <input type="file" id="up" accept=".lua,.txt">
+        </div>
+
+        <div style="margin-top: auto;">
+            <label style="font-size: 10px; color: #444; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="mob"> mobile_optimization
+            </label>
         </div>
     </div>
 
-    <div class="main-content">
-        <div class="toolbar">
-            <button class="btn btn-run" id="go">Obfuscate Script</button>
-            <button class="btn" id="cp">Copy Output</button>
-            <button class="btn" id="cl" style="margin-left:auto;">Clear</button>
-        </div>
-
+    <div class="main">
         <div class="workspace">
-            <div class="editor-container">
-                <div class="label">INPUT_SOURCE</div>
-                <textarea id="in" spellcheck="false" placeholder="-- Paste your raw Luau script here..."></textarea>
-            </div>
-            <div class="editor-container">
-                <div class="label">POBFUS_VIRTUAL_BRICK</div>
-                <textarea id="out" readonly spellcheck="false" placeholder="-- Virtualized output will appear here..."></textarea>
-            </div>
+            <textarea id="in" spellcheck="false" placeholder="-- source_stream (drag file here)"></textarea>
+            <textarea id="out" spellcheck="false" readonly placeholder="-- void_output"></textarea>
         </div>
     </div>
 
-    <div id="notif-container"></div>
-    <script src="script.js"></script>
+    <div id="log"></div>
+
+    <script>
+        (function() {
+            const iel = document.getElementById('in'), oel = document.getElementById('out');
+            const log = document.getElementById('log'), mob = document.getElementById('mob');
+            const upInput = document.getElementById('up');
+
+            const push = (t) => { 
+                log.innerText = `> ${t}`; 
+                setTimeout(() => { if(log.innerText === `> ${t}`) log.innerText = ''; }, 4000);
+            };
+
+            // auto-minify engine
+            const minifyLogic = (src) => {
+                return src
+                    .replace(/--\[\[[\s\S]*?\]\]/g, '') 
+                    .replace(/--.*$/gm, '')             
+                    .replace(/\s+/g, ' ')               
+                    .trim();
+            };
+
+            const todec = (s) => s.split('').map(c => "\\" + c.charCodeAt(0)).join('');
+
+            // file handler
+            const handleFile = (file) => {
+                if (!file) return;
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (['lua', 'txt'].indexOf(ext) === -1) return push("err_type_refused");
+                const reader = new FileReader();
+                reader.onload = (f) => { iel.value = f.target.result; push("stream_imported"); };
+                reader.readAsText(file);
+            };
+
+            upInput.onchange = (e) => { handleFile(e.target.files[0]); upInput.value = ''; };
+
+            iel.addEventListener('dragover', (e) => { e.preventDefault(); iel.classList.add('drag-over'); });
+            iel.addEventListener('dragleave', () => { iel.classList.remove('drag-over'); });
+            iel.addEventListener('drop', (e) => {
+                e.preventDefault();
+                iel.classList.remove('drag-over');
+                handleFile(e.dataTransfer.files[0]);
+            });
+
+            // core process
+            document.getElementById('go').onclick = () => {
+                let src = iel.value.trim();
+                if(!src) return push("err_buffer_null");
+
+                push("minifying_stream...");
+                
+                setTimeout(() => {
+                    try {
+                        src = minifyLogic(src);
+                        push("building_void...");
+
+                        const k = Math.floor(Math.random() * 45) + 32;
+                        const d = Array.from(src).map(x => x.charCodeAt(0) ^ k).join(',');
+                        const h = todec("pobfus: logic active");
+
+                        let res = `--[[\n    pobfus // v1.11.05\n    auto-minified godly build\n]]\n\n`;
+                        res += `task.spawn(function() while task.wait(120) do print("${h}") end end);\n\n`;
+                        res += `local _0x_mem = {${d}}; \n`;
+                        res += `local _success, _error = pcall(function() \n`;
+                        
+                        if (mob.checked) {
+                            res += `    local _0x_buf = {}; for _, v in pairs(_0x_mem) do table.insert(_0x_buf, string.char(bit32.bxor(v, ${k}))) end; local _0x_str = table.concat(_0x_buf); \n`;
+                        } else {
+                            res += `    local _0x_str = ""; for _, v in pairs(_0x_mem) do _0x_str = _0x_str .. string.char(bit32.bxor(v, ${k})) end; \n`;
+                        }
+                        
+                        res += `    local _0x_env = setmetatable({}, { \n`;
+                        res += `        __index = function(_, k) \n`;
+                        res += `            if k == "debug" or k == "getfenv" then return function() end end; \n`;
+                        res += `            return (getgenv and getgenv()[k] or _G[k]) \n`;
+                        res += `        end, \n`;
+                        res += `        __metatable = "locked" \n`;
+                        res += `    }); \n`;
+                        
+                        res += `    local _0x_vm = loadstring(_0x_str); \n`;
+                        res += `    setfenv(_0x_vm, _0x_env); \n`;
+                        res += `    (task and task.spawn or spawn)(_0x_vm); \n`;
+                        res += `end); \n`;
+                        
+                        oel.value = res; 
+                        push("build_complete");
+                    } catch (e) { push("build_fault"); }
+                }, 1000);
+            };
+
+            // utility handlers
+            document.getElementById('cp').onclick = () => { 
+                if(!oel.value) return;
+                navigator.clipboard.writeText(oel.value); 
+                push("buffer_copied"); 
+            };
+
+            document.getElementById('dl').onclick = () => {
+                if(!oel.value) return;
+                const blob = new Blob([oel.value], {type: "text/plain"});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = "pobfus_build.lua";
+                a.click();
+                push("file_dispatched");
+            };
+
+            document.getElementById('cl').onclick = () => { iel.value = ""; oel.value = ""; push("buffer_purged"); };
+        })();
+    </script>
 </body>
-                    </html>
+    </html>
