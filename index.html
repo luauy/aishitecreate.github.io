@@ -3,64 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pobfus v1.0.61 // tenringsofdoom1x</title>
+    <title>Pobfus 1.11.01</title>
     <style>
-        :root { --bg: #0d1117; --sub: #161b22; --brd: #30363d; --txt: #c9d1d9; --acc: #58a6ff; --grn: #238636; }
-        body { background: var(--bg); color: var(--txt); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .header { width: 100%; background: var(--sub); padding: 12px 24px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
-        .badge { background: rgba(88, 166, 255, 0.1); color: var(--acc); border: 1px solid rgba(88, 166, 255, 0.3); padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-        .container { width: 95%; max-width: 950px; margin: 30px 0; border: 1px solid var(--brd); background: var(--sub); border-radius: 8px; overflow: hidden; box-shadow: 0 15px 50px rgba(0,0,0,0.6); }
-        
-        #logo { 
-            padding: 25px; 
-            background: #010409; 
-            color: var(--acc); 
-            font-family: "Courier New", monospace; 
-            font-size: 9px; 
-            line-height: 1.2; 
-            white-space: pre; 
-            overflow-x: auto; 
-            text-align: center;
-            border-bottom: 1px solid var(--brd);
-            margin: 0;
-        }
-
-        .editor { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        textarea { width: 100%; height: 230px; background: #010409; color: #8b949e; border: 1px solid var(--brd); border-radius: 6px; padding: 15px; font-family: 'Consolas', monospace; font-size: 13px; box-sizing: border-box; resize: none; outline: none; }
-        textarea:focus { border-color: var(--acc); color: #fff; }
-        
-        .controls { display: flex; gap: 12px; flex-wrap: wrap; }
-        .btn { padding: 10px 20px; border-radius: 5px; cursor: pointer; border: 1px solid var(--brd); background: #21262d; color: #c9d1d9; font-size: 12px; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
-        .btn:hover { background: #30363d; border-color: #8b949e; }
-        .btn-prim { background: var(--grn); color: white; border: none; }
-        .btn-prim:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
-        
-        #toast { position: fixed; top: 25px; background: var(--acc); color: #0d1117; padding: 10px 25px; border-radius: 4px; display: none; font-weight: 900; z-index: 1000; font-size: 12px; }
+        :root { --bg: #010409; --sub: #0d1117; --brd: #30363d; --txt: #adbac7; --acc: #f69d50; }
+        body { background: var(--bg); color: var(--txt); font-family: 'Consolas', monospace; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        .header { width: 100%; background: var(--sub); padding: 15px 30px; border-bottom: 1px solid var(--brd); display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; }
+        .container { width: 95%; max-width: 1100px; margin: 40px 0; border: 1px solid var(--brd); background: var(--sub); border-radius: 6px; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
+        #logo { padding: 30px; background: #000; color: var(--acc); font-size: 11px; line-height: 1.2; white-space: pre; overflow-x: auto; text-align: center; border-bottom: 1px solid var(--brd); }
+        .editor { padding: 25px; display: flex; flex-direction: column; gap: 20px; }
+        textarea { width: 100%; height: 300px; background: #010409; color: #768390; border: 1px solid var(--brd); padding: 15px; font-size: 13px; outline: none; border-radius: 4px; resize: none; transition: 0.2s; }
+        textarea:focus { border-color: var(--acc); color: #adbac7; }
+        .btn-row { display: flex; gap: 12px; }
+        .btn { padding: 14px 30px; cursor: pointer; border: 1px solid var(--brd); background: #21262d; color: var(--txt); font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-run { background: var(--acc); color: #000; border: none; }
+        #status { font-size: 10px; color: #484f58; font-weight: bold; font-family: 'Courier New', monospace; }
     </style>
 </head>
 <body>
-
-<div id="toast">VERSION_1.0.61_LOADED</div>
-
 <div class="header">
-    <div style="font-weight: 800; font-size: 18px; letter-spacing: 1.5px;">POBFUS <span style="color:var(--acc)">v1.0.61</span></div>
-    <div class="badge">LAG-SYNC ACTIVE</div>
+    <div style="letter-spacing: 4px; font-weight: 900; font-size: 20px;">POBFUS <span style="color:var(--acc)">1.11.01</span></div>
 </div>
-
 <div class="container">
     <pre id="logo"></pre>
     <div class="editor">
-        <textarea id="in" placeholder="-- [ INPUT_BUFFER ]: Paste Lua code here..."></textarea>
-        <div class="controls">
-            <button class="btn btn-prim" id="go" onclick="run()">Protect Source</button>
-            <button class="btn" onclick="test()">Load Sample</button>
-            <button class="btn" onclick="copy()">Copy Output</button>
-            <button class="btn" id="dl" style="display:none" onclick="save()">Download .lua</button>
+        <textarea id="in" spellcheck="false" placeholder="-- [INPUT_BUFFER]"></textarea>
+        <div id="status">ENGINE_IDLE</div>
+        <div class="btn-row">
+            <button class="btn btn-run" id="go"></button>
+            <button class="btn" id="cp"></button>
+            <button class="btn" id="dl" style="display:none"></button>
         </div>
-        <textarea id="out" readonly placeholder="-- [ OUTPUT_WALL ]: Monolith v1.0.61 encrypted data..."></textarea>
+        <textarea id="out" readonly spellcheck="false" placeholder="-- [ENCRYPTED_OUTPUT]"></textarea>
     </div>
 </div>
-
 <script src="script.js"></script>
 </body>
-    </html>
+</html>
