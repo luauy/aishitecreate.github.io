@@ -1,20 +1,30 @@
 /**
- * POBFUS v1.0.6 - CORE ENGINE LOGIC
- * Includes: Comment Stripping, Var Shuffling, & High-Density Slop
+ * POBFUS v1.0.61 - THE MONOLITH
+ * Built for Execution Dominance
  */
 
-const LOGO = `ooooooooo.              .o8        .o88o.                      
-\`888   \`Y88.           "888        888 \`"                      
- 888   .d88'  .ooooo.   888oooo.  o888oo  oooo  oooo   .oooo.o 
- 888ooo88P'  d88' \`88b  d88' \`88b  888    \`888  \`888  d88(  "8 
- 888         888   888  888   888  888     888   888  \`"Y88b.  
- 888         888   888  888   888  888     888   888  o.  )88b 
-o888o        \`Y8bod8P'  \`Y8bod8P' o888o    \`V88V"V8P' 8""888P'
-         [ POBFUS 1.0.6 | tenringsofdoom1x ]`;
+const LOGO_A = `
+#####  ###  ####    #   #   #  ####      #      ###     ### 
+#   # #   #  #     ###   # #  #         ##      # #     #   
+#   # #   #  #### # # #   #   #          #      # #     ### 
+#   # #   #  #  #  ###   #    #          #      # #     # # 
+#   #  ###  #####   #   #      ####     ###  #  ###  #  ### 
+          [ POBFUS 1.0.61 | MONOLITH ]`;
+
+const LOGO_B = `
+MM"""""""\`YM          dP       .8888b                   dP 
+MM  mmmmm  M          88       88   "                   88 
+M'        .M .d8888b. 88d888b. 88aaa  dP    dP .d8888b. 88 
+MM  MMMMMMMM 88'  \`88 88'  \`88 88     88    88 Y8ooooo. dP 
+MM  MMMMMMMM 88.  .88 88.  .88 88     88.  .88       88    
+MM  MMMMMMMM \`88888P' 88Y8888' dP     \`88888P' \`88888P' oo 
+MMMMMMMMMMMM                                               
+          [ POBFUS 1.0.61 | MONOLITH ]`;
+
+let ACTIVE_LOGO = Math.random() > 0.5 ? LOGO_A : LOGO_B;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const l = document.getElementById('logo');
-    if (l) l.innerText = LOGO;
+    document.getElementById('logo').textContent = ACTIVE_LOGO;
 });
 
 function notify(m) {
@@ -23,79 +33,79 @@ function notify(m) {
     setTimeout(() => { t.style.display = 'none'; }, 2000);
 }
 
-function test() {
-    document.getElementById('in').value = "-- Pobfus Test\nprint('Testing Virtualization...')\nlocal x = 10\nif x == 10 then print('Logic Passed') end";
-    notify("TEST_DATA_LOADED");
-}
-
 function randVar() {
     const c = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let r = c.charAt(Math.floor(Math.random() * c.length));
-    for(let i=0; i<4; i++) r += c.charAt(Math.floor(Math.random() * c.length));
+    for(let i=0; i<6; i++) r += c.charAt(Math.floor(Math.random() * c.length));
     return r;
 }
 
-// --- BEAUTIFIER: STRIPS COMMENTS & WHITESPACE ---
+function generateScream(len) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let res = "";
+    for(let i=0; i<len; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+    return res;
+}
+
 function beautifyInput(code) {
-    let clean = code.replace(/--.*$/gm, ''); // Single line
-    clean = clean.replace(/--\[\[[\s\S]*?\]\]/g, ''); // Multi line
-    clean = clean.replace(/\n\s*\n/g, '\n'); // Double lines
-    return clean.trim();
+    return code.replace(/--.*$/gm, '').replace(/--\[\[[\s\S]*?\]\]/g, '').replace(/\n\s*\n/g, '\n').trim();
 }
 
 async function run() {
     let src = document.getElementById('in').value;
     const btn = document.getElementById('go');
     const out = document.getElementById('out');
-
-    if (!src.trim()) return notify("ERROR: BUFFER_EMPTY");
+    if (!src.trim()) return notify("ERROR: NO_INPUT");
 
     btn.disabled = true;
-    out.value = "[!] CLEANING SOURCE...\n[!] REMOVING COMMENTS...\n[!] PREPARING VM...";
+    out.value = "[!] BOOTING_VM_v1.0.61...";
 
-    // Run Beautification before processing
-    src = beautifyInput(src);
+    const logs = [
+        "STRIPPING SOURCE COMMENTS...",
+        "MAPPING ENV_SPOOF (_genv, _renv)...",
+        "GENERATING LAG-SYNC v1-v5 BUFFERS...",
+        "FINALIZING_HEX_BRICK_WALL..."
+    ];
 
-    const phases = ["MAPPING_XOR", "INJECTING_SLOP", "FLATTENING_FLOW", "FINALIZING"];
-    for (let p of phases) {
-        btn.innerText = p + "...";
-        out.value += `\n[SYSTEM]: ${p} [OK]`;
-        await new Promise(r => setTimeout(r, 600));
+    for (let log of logs) {
+        out.value += `\n[!] ${log}`;
+        await new Promise(r => setTimeout(r, 450));
     }
 
     try {
-        const key = (LOGO.length % 255) ^ 108;
+        const key = (ACTIVE_LOGO.length % 255) ^ 108;
         
-        // SLOP GENERATION (5-char junk tail)
-        const slop = src.split('').map(c => {
+        // Screaming Slop
+        const slop = src.split('').map((c, i) => {
             const h = (c.charCodeAt(0) ^ key).toString(16).toUpperCase().padStart(2, '0');
-            const j = Math.random().toString(36).substring(2, 7); 
-            return "0x" + h + j;
+            let noise = Math.random().toString(36).substring(2, 5); 
+            if (i % 3 === 0) noise += "_" + generateScream(12) + "_";
+            return "0x" + h + noise;
         }).join(',');
 
-        // ROAST TRAP
-        const rst = "tenringsofdoom1x_owns_you".split('').map(c => 
-            "0x" + (c.charCodeAt(0) ^ key).toString(16).toUpperCase().padStart(2, '0')
-        ).join(',');
+        // Lag Stages
+        let lagStages = "";
+        ['v1', 'v2', 'v3', 'v4', 'v5'].forEach(s => {
+            lagStages += `local ${s} = ""; for i=1, 450 do ${s} = ${s} .. "${generateScream(4)}" end; `;
+        });
 
-        // DYNAMIC LUA VARS
-        const v = { p: randVar(), c: randVar(), x: randVar(), d: randVar(), t: randVar(), vm: randVar(), r: randVar() };
+        const v = { p: randVar(), c: randVar(), x: randVar(), d: randVar(), vm: randVar(), r: randVar(), env: randVar(), tab: randVar() };
 
-        // THE MONOLITH BRICK WALL
-        const final = `--[[${LOGO}\n    [!] PROTECTED BY POBFUS v1.0.6\n    [!] PROJECT: https://tenringsofdoom1x.github.io/Pobfus/]]\nlocal ${v.p},${v.c},${v.x}=pairs,(string.char),(bit32.bxor);local ${v.d}={${slop}}local ${v.t}={${rst}}local ${v.vm}=function(o,k)local r,s="",100 repeat if s==100 then for _,v in ${v.p}(o)do local h=tostring(v):sub(1,4)local b=tonumber(h,16)if b then r=r..${v.c}(${v.x}(b,k))end end s=0 end until s==0 return r end local ${v.r}=function()local k=108~(#debug.getinfo(1).source%255)local ok,res=pcall(function()return(loadstring or load)(${v.vm}(${v.data||v.d},k))end)if ok and res then pcall(res)else print(${v.vm}(${v.t},k))while true do end end end ${v.r}()`;
+        // Output Assembly
+        const final = `--[[${ACTIVE_LOGO}\n    [!] PROTECTED BY POBFUS v1.0.61\n    [!] WEBSITE: https://tenringsofdoom1x.github.io/]]\n\n${lagStages}\n\nlocal ${v.env} = { _genv = (getgenv or function() return _G end), _renv = (getrenv or function() return _G end), _fenv = getfenv };\nlocal ${v.p},${v.c},${v.x}=pairs,(${v.env}._fenv(1).string.char),(${v.env}._fenv(1).bit32.bxor);\nlocal ${v.d}={${slop}}\n\nlocal ${v.vm}=function(o,k) local r,s="",100 repeat if s==100 then for _,v in ${v.p}(o) do local h=tostring(v):sub(1,4) local b=tonumber(h,16) if b then r=r..${v.c}(${v.x}(b,k)) end end s=0 end until s==0 return r end\n\nlocal function ${v.tab}() local t = {} for i=1, 800 do t[i] = {["val"] = "${generateScream(8)}"} end end; ${v.tab}();\n\nlocal ${v.r}=function() local k=108~(#debug.getinfo(1).source%255) local ok,res=pcall(function() return (loadstring or load)(${v.vm}(${v.d},k)) end) if ok and res then pcall(res) end end; ${v.r}()`;
 
         out.value = final;
         document.getElementById('dl').style.display = 'inline-block';
-        notify("OBFUSCATION_COMPLETE");
+        notify("MONOLITH_ACTIVE");
 
     } catch (e) { notify("ENGINE_CRASH"); }
-    finally { btn.disabled = false; btn.innerText = "PROTECT_SOURCE"; }
+    finally { btn.disabled = false; btn.innerText = "Protect Source"; }
 }
 
 function copy() {
     const o = document.getElementById('out');
     if (!o.value) return; o.select(); document.execCommand('copy');
-    notify("CLIPBOARD_UPDATED");
+    notify("HEX_COPIED");
 }
 
 function save() {
@@ -103,6 +113,11 @@ function save() {
     const b = new Blob([c], { type: 'text/plain' });
     const u = URL.createObjectURL(b);
     const a = document.createElement('a');
-    a.href = u; a.download = 'pobfus_out.lua'; a.click();
-    URL.revokeObjectURL(u); notify("HEX_FILE_SAVED");
-                    }
+    a.href = u; a.download = 'monolith_v1.0.61.lua'; a.click();
+    URL.revokeObjectURL(u); notify("DOWNLOADED");
+}
+
+function test() {
+    document.getElementById('in').value = "-- Pobfus v1.0.61 Monolith Test\nprint('Virtualization Successful')\nlocal val = 100\nprint('Entropy: ' .. (val * math.random()))";
+    notify("SAMPLE_LOADED");
+     }
