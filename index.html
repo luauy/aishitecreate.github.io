@@ -5,119 +5,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pobfus // repository</title>
     <style>
-        :root { --bg: #0a0a0a; --panel: #0d0d0d; --brd: #1a1a1a; --txt: #888; --main: #eee; --acc: #00ff88; --dev: #ffaa00; }
-        
-        * { box-sizing: border-box; }
+        :root { --bg: #0a0a0a; --panel: #0d0d0d; --brd: #1a1a1a; --txt: #888; --main: #eee; --acc: #00ff88; }
+        * { box-sizing: border-box; transition: 0.1s; }
         body { 
             background: var(--bg); color: var(--main); 
             font-family: "fira code", monospace; margin: 0; 
-            display: flex; height: 100vh; text-transform: lowercase;
-            overflow: hidden; 
+            display: flex; height: 100vh; overflow: hidden; text-transform: lowercase;
         }
 
         .sidebar { 
             width: 320px; min-width: 320px; background: var(--panel); border-right: 1px solid var(--brd); 
-            padding: 25px; display: flex; flex-direction: column; gap: 15px;
-            height: 100vh;
+            padding: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 10;
         }
 
-        .brand-row { display: flex; align-items: center; gap: 12px; opacity: 0.9; margin-bottom: 10px;}
-        .logo { width: 22px; height: 22px; fill: var(--main); }
+        .brand-row { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .lua-logo { width: 32px; height: 32px; fill: #000080; background: #fff; border-radius: 50%; padding: 2px; }
+        .gh-logo { width: 24px; height: 24px; fill: var(--main); opacity: 0.8; }
 
-        .title-block { margin-bottom: 10px; }
-        .title { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -1px; }
-        .subtitle { font-size: 9px; color: var(--txt); letter-spacing: 1px; }
+        .title { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+        .subtitle { font-size: 9px; color: var(--acc); letter-spacing: 1px; }
 
-        .changelog-container {
-            margin-top: 10px; flex-grow: 1; overflow-y: auto; padding-right: 5px;
-        }
-        .log-section { margin-bottom: 15px; }
-        .log-ver { font-size: 10px; color: var(--acc); font-weight: 700; margin-bottom: 4px; display: block;}
-        .log-ver.dev { color: var(--dev); }
-        .log-item { font-size: 10px; color: #555; display: block; line-height: 1.4; border-left: 1px solid #222; padding-left: 8px; }
-
-        .nav-group { display: flex; flex-direction: column; gap: 8px; }
+        .nav-group { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .btn { 
             background: transparent; border: 1px solid var(--brd); color: var(--txt); 
-            padding: 10px; cursor: pointer; font-family: inherit; font-size: 11px; text-align: left;
-            transition: 0.2s; border-radius: 4px;
+            padding: 12px; cursor: pointer; font-family: inherit; font-size: 11px; text-align: left;
+            border-radius: 4px; font-weight: 500;
         }
         .btn:hover { border-color: var(--main); color: var(--main); background: #151515; }
-        .btn-run { background: #fff; color: #000; border: none; font-weight: 700; }
+        .btn-run { background: #fff; color: #000; border: none; font-weight: 800; font-size: 12px; }
+        .btn-run:hover { background: var(--acc); transform: scale(1.02); }
 
-        .creator-link { 
-            margin-top: auto; padding-top: 15px; border-top: 1px solid var(--brd);
-            text-decoration: none; display: flex; align-items: center; gap: 10px;
-        }
-        .creator-at { color: var(--txt); font-size: 10px; }
-        .creator-name { color: #fff; font-size: 11px; font-weight: 700; }
+        .changelog { margin-top: 20px; flex-grow: 1; overflow-y: auto; border-top: 1px solid var(--brd); padding-top: 20px; }
+        .log-v { font-size: 10px; color: var(--acc); font-weight: 700; margin-bottom: 5px; display: block; }
+        .log-i { font-size: 10px; color: #444; display: block; margin-bottom: 3px; border-left: 1px solid #222; padding-left: 10px; }
 
-        .main { flex: 1; display: flex; flex-direction: column; height: 100vh; }
-        .workspace { 
-            display: grid; grid-template-columns: 1fr 1fr; flex: 1; 
-            gap: 1px; background: var(--brd);
-        }
-
-        .editor-container { position: relative; height: 100%; background: var(--bg); }
+        .main { flex: 1; display: flex; height: 100vh; background: var(--brd); }
+        .editor-container { flex: 1; display: flex; flex-direction: column; background: var(--bg); position: relative; }
+        .editor-container:first-child { border-right: 1px solid var(--brd); }
+        
         textarea { 
-            width: 100%; height: 100%; background: transparent; border: none; 
+            flex: 1; width: 100%; height: 100%; background: transparent; border: none; 
             color: var(--main); padding: 30px; resize: none; outline: none; 
             font-size: 13px; line-height: 1.6; font-family: "fira code", monospace;
             white-space: pre; overflow: auto;
         }
-        
-        #log { position: fixed; bottom: 20px; right: 20px; font-size: 10px; color: #333; pointer-events: none; }
+
+        .creator-link { 
+            padding-top: 15px; text-decoration: none; border-top: 1px solid var(--brd);
+            display: flex; align-items: center; color: var(--txt); font-size: 11px;
+        }
+        .creator-link b { color: #fff; margin-left: 5px; }
+
+        #status { position: fixed; bottom: 20px; right: 20px; font-size: 10px; color: #444; pointer-events: none; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <div class="brand-row">
-            <svg class="logo" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-            <svg class="logo" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 3c-3.866 0-7 3.134-7 7s3.134 7 7 7 7-3.134 7-7-3.134-7-7-3.134-7-7-3.134-7-7-7zm0 2c2.761 0 5 2.239 5 5s-2.239 5-5 5-5-2.239-5-5 2.239-5 5-5z"/></svg>
+            <svg class="gh-logo" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            <svg class="lua-logo" viewBox="0 0 128 128">
+                <circle cx="64" cy="64" r="60" fill="#000080"/>
+                <circle cx="84" cy="44" r="18" fill="#fff"/>
+            </svg>
         </div>
 
         <div class="title-block">
             <div class="title">pobfus</div>
-            <div class="subtitle">v1.11.05 repository</div>
+            <div class="subtitle">v1.11.05-40 stable</div>
         </div>
 
         <div class="nav-group">
-            <button class="btn btn-run" id="go">execute process</button>
-            <button class="btn" id="cp">copy output</button>
-            <button class="btn" id="cl">purge buffer</button>
+            <button class="btn btn-run" id="obfuscateBtn">execute process</button>
+            <button class="btn" id="dlBtn">download .lua build</button>
+            <button class="btn" id="clearBtn">purge buffer</button>
         </div>
 
-        <div class="history-title" style="font-size: 10px; color: #444; margin-top: 15px; border-bottom: 1px solid var(--brd); padding-bottom: 5px; text-transform: uppercase;">project logs</div>
-        
-        <div class="changelog-container">
-            <div class="log-section">
-                <span class="log-ver dev">v1.11.06 (scheduled)</span>
-                <span class="log-item">deployment date: march 11 2026</span>
-                <span class="log-item">stable core integration</span>
-            </div>
-            <div class="log-section">
-                <span class="log-ver">v1.11.05 (active)</span>
-                <span class="log-item">full sidebar scroll fix</span>
-                <span class="log-item">branding reconstruction</span>
-                <span class="log-item">automated minification</span>
-            </div>
+        <div class="changelog">
+            <span class="log-v">v1.11.06 (march 11)</span>
+            <span class="log-i" style="color:var(--acc)">> schedule confirmed</span>
+            
+            <span class="log-v" style="margin-top:10px">v1.11.05-40</span>
+            <span class="log-i">> replaced copy with download</span>
+            <span class="log-i">> file_blob dispatcher active</span>
         </div>
 
         <a href="https://github.com/tenringsofdoom1x" class="creator-link" target="_blank">
-            <div class="creator-at">@</div>
-            <div class="creator-name">tenringsofdoom1x</div>
+            @ <b>tenringsofdoom1x</b>
         </a>
     </div>
 
     <div class="main">
-        <div class="workspace">
-            <div class="editor-container"><textarea id="in" spellcheck="false" placeholder="-- source_input"></textarea></div>
-            <div class="editor-container"><textarea id="out" spellcheck="false" readonly placeholder="-- void_output"></textarea></div>
-        </div>
+        <div class="editor-container"><textarea id="input" spellcheck="false" placeholder="-- source_input"></textarea></div>
+        <div class="editor-container"><textarea id="output" spellcheck="false" readonly placeholder="-- output_stream"></textarea></div>
     </div>
 
-    <div id="log"></div>
-    <script src="script.js"></script>
+    <div id="status"></div>
+
+    <script>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        const status = document.getElementById('status');
+
+        const setStatus = (msg) => {
+            status.innerText = `> ${msg}`;
+            setTimeout(() => status.innerText = '', 3000);
+        };
+
+        const obfuscate = () => {
+            const src = input.value.trim();
+            if(!src) return setStatus('err: empty_buffer');
+
+            setStatus('virtualizing...');
+
+            setTimeout(() => {
+                try {
+                    const minified = src.replace(/--.*$/gm, '').replace(/\s+/g, ' ').trim();
+                    const key = Math.floor(Math.random() * 50) + 20;
+                    const bytes = Array.from(minified).map(char => char.charCodeAt(0) ^ key).join(',');
+
+                    const build = `--[[ pobfus // v1.11.05-40 ]]\n` +
+                                  `local _mem = {${bytes}};\n` +
+                                  `local _k = ${key};\n` +
+                                  `task.spawn(function()\n` +
+                                  `  local _s = ""; for _,v in pairs(_mem) do _s=_s..string.char(bit32.bxor(v,_k)) end;\n` +
+                                  `  local _vm, _e = loadstring(_s); if _vm then setfenv(_vm, getfenv()); _vm(); else warn("pobfus_err: ".._e) end\n` +
+                                  `end);`;
+
+                    output.value = build;
+                    setStatus('build_complete');
+                } catch(e) {
+                    setStatus('err: build_fault');
+                }
+            }, 600);
+        };
+
+        document.getElementById('obfuscateBtn').onclick = obfuscate;
+
+        document.getElementById('dlBtn').onclick = () => {
+            if(!output.value) return setStatus('err: nothing_to_download');
+            const blob = new Blob([output.value], {type: "text/plain"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "pobfus_build.lua";
+            a.click();
+            URL.revokeObjectURL(url);
+            setStatus('file_dispatched');
+        };
+
+        document.getElementById('clearBtn').onclick = () => {
+            input.value = '';
+            output.value = '';
+            setStatus('buffer_purged');
+        };
+
+        input.oninput = () => { if(output.value) output.value = ''; };
+    </script>
 </body>
-</html>
+                                          </html>
