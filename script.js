@@ -1,100 +1,86 @@
-/**
- * pobfus // v1.11.06 Ghost-Core
- * Universal PC/Mobile Virtualization Engine
- * Authorized: tenringsofdoom1x.github.io
- */
-
-const iel = document.getElementById('in');
-const oel = document.getElementById('out');
-const logo = document.getElementById('logo');
-const st = document.getElementById('stxt');
+const i = document.getElementById('in');
+const o = document.getElementById('out');
+const luaImg = document.getElementById('luaImg');
+const log = document.getElementById('status-log');
 const lbar = document.getElementById('lbar');
-const overlay = document.getElementById('overlay');
+const loader = document.getElementById('output-loader');
+const goBtn = document.getElementById('go');
 
-// 1.0.6 Syntax Patch: Secure Random String Generator
-const gs = (l) => {
-    let s = 'I';
-    for(let i=0; i<l; i++) s += (Math.random() > 0.5 ? 'l' : 'I');
-    return s;
+const gen = (t, l) => {
+    let c = t === 'upper' ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ" : t === 'mixed' ? "AbCdEfGhIjKlMnOpQrStUvWxYz" : "lIlIIllllIIl";
+    return Array.from({length: l}, () => c[Math.floor(Math.random() * c.length)]).join('');
 };
 
-// 1.11.01 Fragment Logic: Key Seeding
-const genID = () => {
-    const c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let r = '';
-    for(let i=0; i<11; i++) r += c.charAt(Math.floor(Math.random() * c.length));
-    return r;
+const junkMath = (n) => {
+    const r = Math.floor(Math.random() * 5000);
+    return `(${r + n} - ${r})`;
 };
 
-// 1.11.03-2 Hotfix: Math Noise & Constant Folding
-const foldNum = (n) => {
-    let v1 = Math.floor(Math.random() * (n / 2));
-    let v2 = n - v1;
-    return `(${v1}+${v2})`;
+const phases = [
+    "pobfus v1.12.01-1 connecting...",
+    "fetching premium tamper assets...",
+    "generating polymorphic bytecode...",
+    "obfuscating control flow...",
+    "applying xor-masking...",
+    "sealing virtual machine..."
+];
+
+const updateLog = async (text) => {
+    const entries = log.querySelectorAll('.status-entry');
+    entries.forEach(e => e.classList.add('dim'));
+    if (entries.length > 2) entries[0].remove();
+
+    const div = document.createElement('div');
+    div.className = 'status-entry';
+    div.innerText = text;
+    log.appendChild(div);
 };
 
-document.getElementById('go').onclick = () => {
-    if(!iel.value.trim()) return;
+goBtn.onclick = async () => {
+    const source = i.value.trim();
+    if (!source) return;
 
-    // Trigger v0.7.00 Pulse Sequence
-    overlay.style.display = 'flex';
-    lbar.style.width = '100%';
-    logo.classList.add('pulse');
+    loader.style.display = 'flex';
+    log.innerHTML = '';
+    lbar.style.width = '0%';
+    luaImg.classList.remove('fade');
 
-    setTimeout(() => {
-        const k = Math.floor(Math.random() * 80) + 20;
-        const w = "obfuscated by pobfus // tenringsofdoom1x.github.io";
-        
-        // v1.11.03-2 Logic Leakage Protection
-        const protection = `local _w="${w}";if not _G.pobfus_verified then warn(_w) end;`;
-        const fullRaw = (protection + iel.value).split('').map(c => "\\" + (c.charCodeAt(0) ^ k)).join('');
-        
-        // v1.11.01 Registry Shuffling (Mobile Safe)
-        const parts = [];
-        let i = 0;
-        while (i < fullRaw.length) {
-            let len = Math.floor(Math.random() * 15) + 10;
-            parts.push(fullRaw.substring(i, i + len));
-            i += len;
-        }
+    for (let idx = 0; idx < phases.length; idx++) {
+        if (idx === 2) luaImg.classList.add('fade');
+        await updateLog(phases[idx]);
+        lbar.style.width = `${((idx + 1) / phases.length) * 100}%`;
+        await new Promise(r => setTimeout(r, 600 + Math.random() * 400));
+    }
 
-        const f=gs(12), sc=gs(10), bx=gs(10), ss=gs(10), sb=gs(10), ls=gs(10), reg=gs(11), res=gs(9);
-        
-        // v1.11.06 Virtual Machine Construction
-        let b = `--[[ ${w} ]]\n`;
-        b += `local ${f}=function()local ${sc},${bx},${ss},${sb},${ls}=string.char,bit32.bxor,string.sub,string.byte,loadstring;`;
-        b += `local _k,${res}=${foldNum(k)},{};`; 
-        b += `for i=1,#${reg} do local _d=${reg}[i];local _r="";for j=1,#_d do _r=_r..${sc}(${bx}(${sb}(${ss}(_d,j,j)),_k))end;${res}[i]=_r end;`;
-        b += `local _x,_e=${ls}(table.concat(${res}));if _x then setfenv(_x,getfenv());_x();else warn("pobfus_err: "..tostring(_e)) end end;`;
+    // Protection Logic
+    const key = Math.floor(Math.random() * 200) + 50;
+    const bytes = source.split('').map(c => c.charCodeAt(0) ^ key);
+    
+    // Robux Icon:  | Premium Icon: 
+    const ROBUX = "\\238\\128\\139";
+    const PREM = "\\238\\128\\129";
 
-        // v1.11.05 The Seal (__metatable locked)
-        let tableContent = parts.map((p, idx) => `[${idx+1}]="${p}"`).join(',');
-        b += `\n${reg}={${tableContent}};`;
-        b += `local ${gs(10)}={__index=${reg},__metatable="protected"};`;
-        b += `setmetatable(${reg},${gs(10)});`;
-        b += `${f}();`;
+    const V_VM = gen('upper', 25);
+    const V_KEY = gen('upper', 12);
+    const V_DATA = gen('', 35);
+    const V_CRASH = gen('mixed', 18);
+    const V_ITER = gen('mixed', 8);
 
-        oel.value = b;
-        
-        // Reset UI
-        overlay.style.display = 'none';
-        lbar.style.width = '0%';
-        logo.classList.remove('pulse');
-    }, 5000);
-};
+    let payload = `--[[ protected by pobfus v1.12.01-1 ]]\n`;
+    
+    // Standalone Tamper Function
+    payload += `local function ${V_CRASH}() while true do warn("${ROBUX} UNAUTHORIZED TAMPER ${PREM}") end end `;
+    payload += `if (debug and debug.getinfo) or (_G.shared) then ${V_CRASH}() end `;
 
-// Download logic with binary suffix
-document.getElementById('dl').onclick = () => {
-    if(!oel.value) return;
-    const b = new Blob([oel.value], {type: "text/plain"});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(b);
-    a.download = `pobfus-${genID()}.lua.txt`;
-    a.click();
-};
+    // Virtual Machine
+    payload += `local ${V_KEY} = ${junkMath(key)} `;
+    payload += `local ${V_DATA} = {${bytes.join(',')}} `;
+    payload += `local function ${V_VM}() `;
+    payload += `if tostring(${V_VM}):find("func") == nil then ${V_CRASH}() end `;
+    payload += `local s = "" for ${V_ITER}=1, #${V_DATA} do s = s .. string.char(bit32.bxor(${V_DATA}[${V_ITER}], ${V_KEY})) end `;
+    payload += `local f = loadstring(s) if f then setfenv(f, getfenv()) f() end end `;
+    payload += `${V_VM}() --[[ end of obfuscation ]]`;
 
-// Clear logic
-document.getElementById('cl').onclick = () => {
-    iel.value = "";
-    oel.value = "";
+    o.value = payload;
+    setTimeout(() => { loader.style.display = 'none'; }, 600);
 };
