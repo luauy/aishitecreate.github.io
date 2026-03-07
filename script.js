@@ -1,112 +1,121 @@
-(function() {
-    const iel = document.getElementById('in');
-    const oel = document.getElementById('out');
-    const log = document.getElementById('log');
-    const upInput = document.getElementById('up');
-    const mob = document.getElementById('mob');
+/**
+ * pobfus // v1.11.06 STABLE
+ * repository logic: ghost-edition (root-level)
+ * domain: tenringsofdoom1x.github.io
+ */
 
-    const push = (t) => { 
-        log.innerText = `> ${t}`; 
-        setTimeout(() => { if(log.innerText === `> ${t}`) log.innerText = ''; }, 4000);
-    };
+const iel = document.getElementById('in'); // Input Textarea
+const oel = document.getElementById('out'); // Output Textarea
+const overlay = document.getElementById('overlay');
+const lbar = document.getElementById('lbar');
+const stxt = document.getElementById('stxt');
 
-    // --- the auto-minify engine ---
-    const minifyLogic = (src) => {
-        return src
-            .replace(/--\[\[[\s\S]*?\]\]/g, '') // remove multi-line comments
-            .replace(/--.*$/gm, '')             // remove single-line comments
-            .replace(/\s+/g, ' ')               // collapse whitespace
-            .trim();
-    };
+// helper: generates randomized IlIlI variable names for Lua
+const gs = (l) => { 
+    let s = 'I'; 
+    for(let i=0; i<l; i++) s += (Math.random() > 0.5 ? 'l' : 'I'); 
+    return s; 
+};
 
-    const todec = (s) => s.split('').map(c => "\\" + c.charCodeAt(0)).join('');
+// helper: generates randomized ID for filenames
+const genID = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let res = '';
+    for(let i=0; i<11; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+    return res;
+};
+
+// Human-like phrases (no underscores)
+const phrases = [
+    "mapping virtual instructions",
+    "scanning for logical vulnerabilities",
+    "shadowing global environment",
+    "applying ghost layer encryption",
+    "injecting randomized junk layers",
+    "wrapping execution scream",
+    "finalizing distribution blob",
+    "hiding internal warnings"
+];
+
+const executeProcess = () => {
+    const src = iel.value.trim();
+    if(!src) return;
+
+    // UI Reset
+    overlay.style.display = 'flex';
+    lbar.style.transition = 'none';
+    lbar.style.width = '0%';
     
-    const handleFile = (file) => {
-        if (!file) return;
-        const ext = file.name.split('.').pop().toLowerCase();
-        if (['lua', 'js', 'txt'].indexOf(ext) === -1) return push("err_type_refused");
-        const reader = new FileReader();
-        reader.onload = (f) => { iel.value = f.target.result; push("stream_imported"); };
-        reader.readAsText(file);
-    };
+    // Trigger 15s linear animation
+    setTimeout(() => {
+        lbar.style.transition = 'width 15s linear';
+        lbar.style.width = '100%';
+    }, 50);
 
-    upInput.onchange = (e) => { handleFile(e.target.files[0]); upInput.value = ''; };
-
-    iel.addEventListener('dragover', (e) => { e.preventDefault(); iel.style.background = "#111"; });
-    iel.addEventListener('dragleave', () => { iel.style.background = ""; });
-    iel.addEventListener('drop', (e) => {
-        e.preventDefault();
-        iel.style.background = "";
-        handleFile(e.dataTransfer.files[0]);
+    // Shuffle and display phrases
+    let shuffled = phrases.sort(() => 0.5 - Math.random());
+    shuffled.forEach((m, i) => {
+        setTimeout(() => { 
+            stxt.innerText = m + "..."; 
+        }, i * 1800);
     });
 
-    // --- core processing ---
-    document.getElementById('go').onclick = () => {
-        let src = iel.value.trim();
-        if(!src) return push("err_buffer_null");
-
-        push("minifying_stream...");
-        
-        setTimeout(() => {
-            try {
-                // step 1: auto-minify
-                src = minifyLogic(src);
-                push("building_void...");
-
-                // step 2: godly virtualization
-                const k = Math.floor(Math.random() * 45) + 32;
-                const d = Array.from(src).map(x => x.charCodeAt(0) ^ k).join(',');
-                const h = todec("pobfus: logic active");
-
-                let res = `--[[\n    pobfus // v1.11.05\n    auto-minified godly build\n]]\n\n`;
-                res += `task.spawn(function() while task.wait(120) do print("${h}") end end);\n\n`;
-                res += `local _0x_mem = {${d}}; \n`;
-                res += `local _success, _error = pcall(function() \n`;
-                
-                if (mob && mob.checked) {
-                    res += `    local _0x_buf = {}; for _, v in pairs(_0x_mem) do table.insert(_0x_buf, string.char(bit32.bxor(v, ${k}))) end; local _0x_str = table.concat(_0x_buf); \n`;
-                } else {
-                    res += `    local _0x_str = ""; for _, v in pairs(_0x_mem) do _0x_str = _0x_str .. string.char(bit32.bxor(v, ${k})) end; \n`;
-                }
-                
-                res += `    local _0x_env = setmetatable({}, { \n`;
-                res += `        __index = function(_, k) \n`;
-                res += `            if k == "debug" or k == "getfenv" then return function() end end; \n`;
-                res += `            return (getgenv and getgenv()[k] or _G[k]) \n`;
-                res += `        end, \n`;
-                res += `        __metatable = "locked" \n`;
-                res += `    }); \n`;
-                
-                res += `    local _0x_vm = loadstring(_0x_str); \n`;
-                res += `    setfenv(_0x_vm, _0x_env); \n`;
-                res += `    task.spawn(_0x_vm); \n`;
-                res += `end); \n`;
-                
-                oel.value = res; 
-                push("build_complete");
-            } catch (e) { 
-                push("build_fault");
+    // Main Encryption Logic (After 15s)
+    setTimeout(() => {
+        try {
+            const k = Math.floor(Math.random() * 80) + 20;
+            const watermark = "obfuscated by pobfus // tenringsofdoom1x.github.io";
+            
+            // SNEAKY: Warning is buried in the encrypted payload
+            const protection = `local _w = "${watermark}"; if not _G.pobfus_verified then warn(_w) end; `;
+            
+            // Convert to XOR-encrypted string
+            const d = (protection + src).split('').map(c => "\\" + (c.charCodeAt(0) ^ k)).join('');
+            
+            const f = gs(12); // Shadowed function name
+            let b = `--[[ ${watermark} ]]\n`;
+            
+            // DYNAMIC JUNK: Random lines to confuse de-obfuscators
+            const junkLines = Math.floor(Math.random() * 50) + 35;
+            for(let i=0; i<junkLines; i++) {
+                b += `local ${gs(10)} = ${Math.floor(Math.random()*1000)} + ${Math.floor(Math.random()*1000)};\n`;
             }
-        }, 1200);
-    };
 
-    document.getElementById('cp').onclick = () => {
-        if(!oel.value) return push("err_empty");
-        navigator.clipboard.writeText(oel.value); 
-        push("buffer_copied");
-    };
+            // The Scream (Core Decryption Function)
+            b += `local ${f} = function() `;
+            b += `local _k,_d = ${k},"${d}"; `;
+            b += `local _r = ""; for i=1,#_d do _r=_r..string.char(bit32.bxor(string.byte(string.sub(_d,i,i)),_k)) end; `;
+            b += `local _x=loadstring(_r); if _x then setfenv(_x,getfenv()); _x(); end end; ${f}();\n`;
+            
+            // Post-junk footer
+            for(let i=0; i<10; i++) b += `local ${gs(8)} = ${Math.random()};\n`;
 
-    document.getElementById('dl').onclick = () => {
-        if(!oel.value) return push("err_empty");
-        const blob = new Blob([oel.value], {type: "text/plain"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = "pobfus_build.lua";
-        a.click();
-        push("file_dispatched");
-    };
+            oel.value = b;
+            overlay.style.display = 'none';
+            stxt.innerText = "preparing environment...";
+            
+        } catch(e) {
+            console.error("pobfus_err:", e);
+            overlay.style.display = 'none';
+        }
+    }, 15000);
+};
 
-    document.getElementById('cl').onclick = () => {
-        iel.value = ""; oel.value = ""; push("buffer_purged");
-    };
-})();
+// Event Listeners
+document.getElementById('go').onclick = executeProcess;
+
+document.getElementById('dl').onclick = () => {
+    if(!oel.value) return;
+    const blob = new Blob([oel.value], {type: "text/plain"});
+    const a = document.createElement('a');
+    // Filename: pobfus-[RANDOM]-110.lua.txt
+    a.href = URL.createObjectURL(blob);
+    a.download = `pobfus-${genID()}-110.lua.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+};
+
+document.getElementById('cl').onclick = () => {
+    iel.value = "";
+    oel.value = "";
+};
