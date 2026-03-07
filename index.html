@@ -5,132 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pobfus // repository</title>
     <style>
-        :root { --bg: #0a0a0a; --panel: #0d0d0d; --brd: #1a1a1a; --txt: #888; --main: #eee; --acc: #00ff88; }
+        :root { --bg: #050505; --panel: #0a0a0a; --brd: #151515; --txt: #777; --main: #fff; --acc: #00ff88; --scroll: #222; }
         * { box-sizing: border-box; font-family: "fira code", monospace; text-transform: lowercase; }
         body { background: var(--bg); color: var(--main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        .sidebar { width: 420px; min-width: 420px; background: var(--panel); border-right: 1px solid var(--brd); padding: 30px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--scroll); }
 
-        .sidebar { width: 320px; min-width: 320px; background: var(--panel); border-right: 1px solid var(--brd); padding: 30px; display: flex; flex-direction: column; gap: 15px; }
         .brand-row { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
-        .lua-logo { width: 32px; height: 32px; border-radius: 50%; }
-        .title { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -1px; }
-        .v-badge { background: #1a1a1a; color: var(--acc); font-size: 8px; padding: 4px 8px; border-radius: 20px; border: 1px solid #333; width: fit-content; margin-bottom: 15px; font-weight: 700; }
+        .lua-logo { width: 40px; height: 40px; border-radius: 50%; transition: 0.3s; }
+        .pulse { animation: heartbeat 1s infinite ease-in-out; filter: drop-shadow(0 0 12px var(--acc)); }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
-        .btn { background: transparent; border: 1px solid var(--brd); color: var(--txt); padding: 12px; cursor: pointer; border-radius: 4px; text-align: left; width: 100%; transition: 0.2s; }
-        .btn-run { background: #fff; color: #000; border: none; font-weight: 800; margin-top: 10px; }
-        .btn:hover { border-color: var(--main); color: var(--main); background: #151515; }
+        .v-badge { background: #111; color: var(--acc); font-size: 10px; padding: 6px 16px; border-radius: 4px; border: 1px solid #222; width: fit-content; font-weight: 800; }
+        
+        .section-title { font-size: 11px; color: var(--acc); font-weight: 800; margin-top: 25px; letter-spacing: 1.5px; border-bottom: 1px solid #111; padding-bottom: 8px; text-transform: uppercase; }
+        .log-box { font-size: 10px; color: var(--txt); line-height: 1.7; padding: 12px 0; }
+        .log-item { margin-bottom: 12px; border-left: 2px solid #1a1a1a; padding-left: 10px; transition: 0.2s; }
+        .log-item:hover { border-left-color: var(--acc); color: #aaa; }
+        .log-item b { color: #eee; font-weight: 700; }
 
-        #overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 5, 0.98); z-index: 1000;
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        .loader-box { width: 350px; text-align: center; }
-        .bar-bg { width: 100%; height: 1px; background: #222; margin-top: 20px; overflow: hidden; }
-        .bar-fill { width: 0%; height: 100%; background: var(--acc); transition: width 15s linear; }
-        .status { color: #fff; font-size: 11px; margin-top: 25px; height: 15px; font-weight: 300; opacity: 0.8; }
+        .btn { background: transparent; border: 1px solid var(--brd); color: var(--txt); padding: 15px; cursor: pointer; border-radius: 4px; text-align: left; width: 100%; transition: 0.2s; font-size: 12px; font-weight: 600; }
+        .btn-run { background: var(--main); color: #000; border: none; font-weight: 900; margin-top: 10px; }
+        .btn:hover { border-color: var(--acc); color: var(--main); background: #0c0c0c; }
 
         .main { flex: 1; display: flex; background: var(--brd); }
         .editor-container { flex: 1; display: flex; flex-direction: column; background: var(--bg); position: relative; }
-        textarea { flex: 1; background: transparent; border: none; color: var(--main); padding: 30px; resize: none; outline: none; font-size: 12px; line-height: 1.6; }
+        textarea { flex: 1; background: transparent; border: none; color: var(--main); padding: 45px; resize: none; outline: none; font-size: 13px; line-height: 1.8; }
+        
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; }
+        .bar-bg { width: 350px; height: 1px; background: #111; margin-top: 25px; }
+        .bar-fill { width: 0%; height: 100%; background: var(--acc); transition: width 5s linear; }
     </style>
 </head>
 <body>
-
-<div id="overlay">
-    <div class="loader-box">
-        <div class="status" id="stxt">preparing environment...</div>
+    <div id="overlay">
+        <div id="stxt" style="font-size: 11px; letter-spacing: 3px; color: var(--acc); font-weight: 900;">CALIBRATING GHOST CORE...</div>
         <div class="bar-bg"><div class="bar-fill" id="lbar"></div></div>
     </div>
-</div>
 
-<div class="sidebar">
-    <div class="brand-row">
-        <img src="https://i.ibb.co/HThqqB3k/icons8-lua-logo.jpg" class="lua-logo" alt="lua">
-        <div class="title">pobfus</div>
+    <div class="sidebar">
+        <div class="brand-row">
+            <img src="https://i.ibb.co/HThqqB3k/icons8-lua-logo.jpg" class="lua-logo" id="logo" alt="lua">
+            <div style="font-size: 26px; font-weight: 900; letter-spacing: -1px;">pobfus</div>
+        </div>
+        <div class="v-badge">v1.11.06 ghost-core</div>
+
+        <button class="btn btn-run" id="go">execute process</button>
+        <button class="btn" id="dl">download build</button>
+        <button class="btn" id="cl">purge buffer</button>
+
+        <div class="section-title">Timeline // Rapid-Patches</div>
+        <div class="log-box">
+            <div class="log-item"><b>1.12.00:</b> [nebula] bytecode virtualization. (upcoming)</div>
+            <div class="log-item"><b>1.11.06:</b> current build; synapse z / delta optimized.</div>
+            <div class="log-item"><b>1.11.05:</b> introduced <b>protected metatables</b> to block registry dumps.</div>
+            <div class="log-item"><b>1.11.03-2:</b> hotfix for logic-leakage and table index collision.</div>
+            <div class="log-item"><b>1.11.01:</b> prototype <b>registry-shuffling</b>; abandoned linear masking.</div>
+            <div class="log-item"><b>1.0.6 beta:</b> fixed failing js engine and syntax output.</div>
+            <div class="log-item"><b>0.7.00:</b> genesis era; automated xor masking.</div>
+        </div>
+
+        <div class="section-title">Maintenance Record</div>
+        <div class="log-box">
+            the 1.11 series was defined by rapid evolution. <b>v1.11.01</b> proved that fragmented registries were the future. <b>v1.11.03-2</b> was a critical hotfix that stopped "ghost-collisions" where code fragments would overwrite each other. <b>v1.11.05</b> finaly sealed the engine with the protected metatable layer.
+        </div>
+
+        <div style="margin-top:auto; padding-top:25px; font-size:10px; color:#222; text-align: center;">
+            authorized: <b>tenringsofdoom1x.github.io</b>
+        </div>
     </div>
-    <div class="v-badge">v1.11.06 stable</div>
-    
-    <button class="btn btn-run" id="go">execute process</button>
-    <button class="btn" id="dl">download .lua build</button>
-    <button class="btn" id="cl">purge all buffers</button>
 
-    <div style="margin-top:auto; padding-top:15px; border-top: 1px solid var(--brd);">
-        <a href="https://tenringsofdoom1x.github.io/" style="text-decoration:none; color:var(--txt); font-size:10px;">authorized creator:<br><b style="color:#fff">tenringsofdoom1x.github.io</b></a>
+    <div class="main">
+        <div class="editor-container" style="border-right: 1px solid var(--brd);"><textarea id="in" spellcheck="false" placeholder="-- source_input"></textarea></div>
+        <div class="editor-container"><textarea id="out" spellcheck="false" readonly placeholder="-- ghost_output"></textarea></div>
     </div>
-</div>
 
-<div class="main">
-    <div class="editor-container" style="border-right: 1px solid var(--brd);">
-        <textarea id="in" spellcheck="false" placeholder="-- input source"></textarea>
-    </div>
-    <div class="editor-container">
-        <textarea id="out" spellcheck="false" readonly placeholder="-- await 15s sequence"></textarea>
-    </div>
-</div>
-
-<script>
-    const iel = document.getElementById('in'), oel = document.getElementById('out');
-    const overlay = document.getElementById('overlay'), lbar = document.getElementById('lbar'), stxt = document.getElementById('stxt');
-
-    const gs = (l) => { let s = 'I'; for(let i=0; i<l; i++) s += (Math.random() > 0.5 ? 'l' : 'I'); return s; };
-    const genID = () => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        let res = '';
-        for(let i=0; i<11; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-        return res;
-    };
-
-    const phrases = [
-        "mapping virtual instructions",
-        "scanning for logical vulnerabilities",
-        "shadowing global environment",
-        "applying ghost layer encryption",
-        "injecting randomized junk layers",
-        "wrapping execution scream",
-        "finalizing distribution blob",
-        "hiding internal warnings"
-    ];
-
-    document.getElementById('go').onclick = () => {
-        if(!iel.value.trim()) return;
-        overlay.style.display = 'flex';
-        lbar.style.width = '0%';
-        setTimeout(() => lbar.style.width = '100%', 100);
-
-        let shuffled = phrases.sort(() => 0.5 - Math.random());
-        shuffled.forEach((m, i) => {
-            setTimeout(() => { stxt.innerText = m + "..."; }, i * 1800);
-        });
-
-        setTimeout(() => {
-            const k = Math.floor(Math.random() * 80) + 20;
-            const watermark = "obfuscated by pobfus // tenringsofdoom1x.github.io";
-            const protection = `local _w = "${watermark}"; if not _G.pobfus_verified then warn(_w) end; `;
-            
-            const d = (protection + iel.value).split('').map(c => "\\" + (c.charCodeAt(0) ^ k)).join('');
-            const f = gs(12);
-            
-            let b = `--[[ ${watermark} ]]\n`;
-            const junkLines = Math.floor(Math.random() * 50) + 35;
-            for(let i=0; i<junkLines; i++) b += `local ${gs(10)} = ${Math.floor(Math.random()*1000)} + ${Math.floor(Math.random()*1000)};\n`;
-
-            b += `local ${f} = function() local _k,_d = ${k},"${d}"; local _r = ""; for i=1,#_d do _r=_r..string.char(bit32.bxor(string.byte(string.sub(_d,i,i)),_k)) end; local _x=loadstring(_r); if _x then setfenv(_x,getfenv()); _x(); end end; ${f}();\n`;
-            
-            oel.value = b;
-            overlay.style.display = 'none';
-        }, 15000);
-    };
-
-    document.getElementById('dl').onclick = () => {
-        if(!oel.value) return;
-        const blob = new Blob([oel.value], {type: "text/plain"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `pobfus-${genID()}-110.lua.txt`;
-        a.click();
-    };
-
-    document.getElementById('cl').onclick = () => { iel.value = ""; oel.value = ""; };
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
