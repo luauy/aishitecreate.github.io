@@ -3,90 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pobfus // v1.12.01-1</title>
-    <style>
-        :root { --bg: #0d1117; --panel: #161b22; --brd: #30363d; --main: #c9d1d9; --acc: #238636; --gh: #f0f6fc; }
-        * { box-sizing: border-box; font-family: -apple-system, "Fira Code", monospace; text-transform: lowercase; }
-        body { background: var(--bg); color: var(--main); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-
-        .sidebar { width: 380px; background: var(--panel); border-right: 1px solid var(--brd); padding: 30px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
-        .version-tag { font-size: 10px; color: #8b949e; border: 1px solid var(--brd); width: fit-content; padding: 2px 8px; border-radius: 6px; }
-        .nav-btn { background: var(--acc); color: #fff; border: 1px solid rgba(240,246,252,0.1); padding: 12px; cursor: pointer; border-radius: 6px; font-weight: 600; font-size: 13px; }
-        .sec-btn { background: #21262d; color: #c9d1d9; border: 1px solid var(--brd); padding: 10px; cursor: pointer; border-radius: 6px; font-size: 12px; margin-top: 5px; width: 100%; }
-        
-        .main { flex: 1; display: flex; background: #010409; position: relative; }
-        .editor-container { flex: 1; display: flex; flex-direction: column; position: relative; border-right: 1px solid var(--brd); }
-        textarea { width: 100%; height: 100%; padding: 40px; background: transparent; border: none; outline: none; font-size: 13px; line-height: 1.8; color: #c9d1d9; z-index: 5; resize: none; }
-        #out { background: #0d1117; color: #7ee787; }
-
-        /* FIXED LOADER OVERLAY */
-        #output-loader { 
-            display: none; 
-            position: absolute; 
-            inset: 0; 
-            background: rgba(13, 17, 23, 0.98); 
-            z-index: 1000; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        
-        #gh-spinner { 
-            width: 60px; 
-            fill: var(--gh); 
-            margin-bottom: 30px; 
-            will-change: transform;
-        }
-        .spinning { animation: ghSpin 1s linear infinite; }
-
-        #status-log { 
-            height: 80px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px;
-        }
-        .status-entry { 
-            font-size: 12px; 
-            color: #58a6ff; 
-            font-weight: 500;
-            animation: slideIn 0.3s ease forwards;
-        }
-        
-        .p-bar { width: 240px; height: 2px; background: #21262d; border-radius: 10px; margin-top: 30px; overflow: hidden; }
-        .p-fill { width: 0%; height: 100%; background: var(--acc); transition: width 0.4s ease; }
-
-        @keyframes ghSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
+    <title>pobfus | tenringsofdoom1x.github.io</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="sidebar">
-        <div class="version-tag">v1.12.01-1 stable</div>
-        <div style="font-size: 24px; font-weight: 600;">pobfus</div>
-        <button class="nav-btn" id="go">protect script</button>
-        <button class="sec-btn" id="clear">clear code</button>
-        <button class="sec-btn" id="dl" disabled style="opacity:0.5">download .lua</button>
+
+    <div id="sidebar">
+        <div class="brand">
+            <h2>pobfus</h2>
+            <div class="verified">✓ Developer Edition</div>
+        </div>
         
-        <div style="margin-top:20px; font-size:11px; color:#444; border-top:1px solid #30363d; padding-top:15px;">
-            premium tamper enabled:  
+        <nav id="sidebar-scroll">
+            <div class="nav-item active-nav">Obfuscator</div>
+            
+            <div class="shame-section">
+                <h4>💀 Wall of Shame</h4>
+                <div class="shame-entry">
+                    <b>Grok AI (xAI)</b><br>
+                    <span>Failed to resolve XOR-fold virtualization on v1.11.x. Logic remained sealed. Status: <font color="#ff3e3e">DEFEATED</font></span>
+                </div>
+            </div>
+
+            <div class="logs-container">
+                <h4>System History</h4>
+                <div class="log-entry"><b>v1.12.01-1</b><br>Full-Spectrum Obfuscation. Warn logic is now encrypted via hex-XOR.</div>
+                <div class="log-entry"><b>v1.11.05</b><br>Delta Executor optimization. Fixed bit32 overflow for mobile.</div>
+            </div>
+        </nav>
+
+        <div class="status-box">
+            <div class="status-label">LOGGING PIPELINE</div>
+            <div class="status-val">PRIVATE & ENCRYPTED</div>
         </div>
     </div>
 
-    <div class="main">
-        <div class="editor-container">
-            <textarea id="in" spellcheck="false" placeholder="-- paste source here"></textarea>
-        </div>
-        <div class="editor-container">
-            <div id="output-loader">
-                <svg id="gh-spinner" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
-                <div id="status-log"></div>
-                <div class="p-bar"><div class="p-fill" id="lbar"></div></div>
+    <main id="content">
+        <header>
+            <h1>Protection Workspace</h1>
+            <p>Advanced Lua virtualization with centralized leaker tracking and automated server hooks.</p>
+        </header>
+        
+        <div class="io-wrapper">
+            <input type="text" id="scriptName" placeholder="Project Name (e.g., Sky Hub V2)" style="width: 100%; padding: 12px; background: #050505; border: 1px solid var(--border); color: white; border-radius: 8px; margin-bottom: 15px; outline: none; font-family: sans-serif;">
+            
+            <textarea id="input" placeholder="-- Paste your raw Lua code here..."></textarea>
+            
+            <div class="controls">
+                <button id="goBtn">Protect Script</button>
+                <button id="copyBtn" class="secondary">Copy to Clipboard</button>
+                <button id="dlBtn" class="secondary" disabled>Download .lua</button>
             </div>
-            <textarea id="out" spellcheck="false" readonly placeholder="-- protected output"></textarea>
+
+            <textarea id="output" readonly placeholder="pobfus-protected code will appear here..."></textarea>
         </div>
-    </div>
+        
+        <div id="history">Build Instance: Ready</div>
+    </main>
+
     <script src="script.js"></script>
 </body>
 </html>
