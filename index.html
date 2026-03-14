@@ -2,64 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>tenringsofdoom1x | Pobfus v1.13.90 Successor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POBFUS | 110\011</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body style="background-color: White; color: Black; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; display: flex; flex-direction: column;">
+<body class="pobfus-theme">
 
-    <header style="background-color: #f6f8fa; border-bottom: 1px solid LightGray; padding: 16px 24px; display: flex; align-items: center; gap: 12px;">
-        <img id="lua-logo-main" style="width: 24px;"> <span style="font-size: 14px; color: SteelBlue;">tenringsofdoom1x / <strong style="color: Black;">pobfus-successor</strong></span>
-        <span style="border: 1px solid LightGray; border-radius: 12px; padding: 2px 8px; font-size: 12px; color: Gray;">Public</span>
+    <header>
+        <div class="logo-container">
+            <img id="lua-logo-main" src="" alt="POBFUS Logo" width="64" height="64">
+        </div>
+        <div class="title-gate">
+            <h1>POBFUS <span class="version">110\011</span></h1>
+        </div>
     </header>
 
-    <div style="display: flex; flex: 1; overflow: hidden;">
-        <aside style="width: 320px; border-right: 1px solid LightGray; padding: 24px; overflow-y: auto; background-color: White;">
-            <div style="margin-bottom: 30px;">
-                <h3 style="font-size: 14px; border-bottom: 1px solid LightGray; padding-bottom: 5px;">Execution</h3>
-                <button id="pushBtn" 
-                    onmouseover="this.style.background='linear-gradient(to right, #FFD700, Gold)'" 
-                    onmouseout="this.style.background='ForestGreen'"
-                    style="width: 100%; padding: 12px; margin-bottom: 8px; background-color: ForestGreen; color: White; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s;">
-                    Obfuscate & Push
-                </button>
-                <button id="clrBtn" style="width: 100%; padding: 8px; background-color: White; border: 1px solid DarkGray; border-radius: 6px; color: Maroon; cursor: pointer;">Purge Workspace</button>
-            </div>
+    <main>
+        <div class="input-wrapper">
+            <div id="hl-layer"></div>
+            <textarea id="input" placeholder="Enter source code to slop..."></textarea>
+        </div>
 
-            <div style="margin-bottom: 30px;">
-                <h3 style="font-size: 14px; border-bottom: 1px solid LightGray; padding-bottom: 5px;">Evolution Timeline</h3>
-                <ul id="v-history" style="list-style: none; padding: 0; font-size: 12px; line-height: 1.6;">
-                    <li style="margin-bottom: 10px;"><b style="color: Gold;">v1.13.90</b>: Virtual Macro Engine</li>
-                    <li style="margin-bottom: 10px;"><b style="color: #FFD700;">v1.12.00</b>: Multi-layer Constant Virtualization</li>
-                    <li style="margin-bottom: 10px;"><b style="color: #FFEC8B;">v1.11.00</b>: Env Hotfixes</li>
-                    <li style="margin-bottom: 10px;"><b style="color: Silver;">v0.1.00</b>: The Kickstart Idea</li>
-                </ul>
-            </div>
-
-            <div style="border-top: 1px solid LightGray; padding-top: 15px;">
-                <h3 style="font-size: 14px; color: Black; margin-bottom: 5px;">Legacy Remarks</h3>
-                <p style="font-size: 11px; color: Gray; line-height: 1.5;">
-                    Built on the legacy of <b>MoonSec, Moonix, PSU,</b> and <b>IB</b>. Inspired by the transition from a kickstarter idea to a Successor.
-                </p>
-            </div>
-        </aside>
-
-        <main style="flex: 1; display: flex; flex-direction: column; background-color: #0d1117;">
-            <div style="background-color: #161b22; padding: 8px 16px; color: White; font-size: 12px; border-bottom: 1px solid #30363d;">
-                successor_engine.lua
-            </div>
-            
-            <div style="flex: 1; display: flex; position: relative; overflow: hidden;">
-                <div id="hl-layer" style="position: absolute; width: 100%; height: 100%; padding: 25px; font-family: 'Fira Code', monospace; font-size: 13px; white-space: pre-wrap; pointer-events: none; box-sizing: border-box; overflow-y: hidden;"></div>
-                <textarea id="input" spellcheck="false" placeholder="-- Paste Source Code" style="flex: 1; background: transparent; color: transparent; caret-color: White; border: none; outline: none; padding: 25px; font-family: 'Fira Code', monospace; font-size: 13px; z-index: 2; resize: none; box-sizing: border-box;"></textarea>
-                <div id="output" style="flex: 1; background-color: Black; color: Lime; padding: 25px; font-family: 'Fira Code', monospace; font-size: 12px; border-left: 1px solid #30363d; overflow-y: auto; white-space: pre-wrap; box-sizing: border-box;">-- [ Successor Stream ]</div>
-            </div>
-
-            <div style="height: 120px; background-color: Black; border-top: 1px solid #30363d;">
-                <div style="background-color: #161b22; color: #8b949e; font-size: 11px; padding: 6px 25px;">CONSOLE: SKIDDY STEVE v1.13.90</div>
-                <div id="steve-logs" style="padding: 12px 25px; color: Gray; font-size: 12px; font-family: 'Fira Code';">Ready for obfuscation.</div>
-            </div>
-        </main>
-    </div>
+        <pre id="steve-logs" class="terminal-output"></pre>
+        
+        <div id="output" class="hidden-results"></div>
+    </main>
 
     <script src="script.js"></script>
 </body>
