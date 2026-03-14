@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>POBFUS | Bytesmas Priority Build</title>
+    <title>POBFUS | Integrated Ticker Build</title>
     <style>
         :root {
             --gh-bg: #0d1117;
@@ -11,7 +11,6 @@
             --rbx-log-bg: #1b1b1b;
             --p-green: #39ff14;
             --p-blue: #79c0ff;
-            --p-purple: #d2a8ff;
             --p-red: #ff3131;
             --p-gold: #ffcc00;
         }
@@ -19,24 +18,12 @@
         body {
             background-color: #010409;
             color: #c9d1d9;
-            font-family: "JetBrains Mono", monospace;
+            font-family: "Arial", sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
-        }
-
-        #geo-lock {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
         }
 
         header {
@@ -47,56 +34,67 @@
             align-items: center;
             justify-content: space-between;
             height: 48px;
+            flex-shrink: 0;
         }
 
         .app-container { display: flex; flex: 1; overflow: hidden; }
 
         aside {
-            width: 260px;
+            width: 240px;
             background: var(--gh-sidebar);
             border-right: 1px solid var(--gh-border);
-            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
         }
 
         .sidebar-section { padding: 15px; border-bottom: 1px solid var(--gh-border); }
-        .sidebar-section h4 { margin: 0 0 10px 0; color: #555; text-transform: uppercase; font-size: 10px; }
-        
-        .toggle-btn {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 8px;
-            background: #21262d;
-            border: 1px solid var(--gh-border);
-            border-radius: 4px;
-            margin-bottom: 5px;
-            cursor: pointer;
-            font-size: 10px;
-        }
-        .toggle-btn.active { border-color: var(--p-red); color: #fff; }
+        .sidebar-section h4 { margin: 0 0 10px 0; color: #555; text-transform: uppercase; font-size: 11px; font-weight: bold; }
 
-        .workspace { display: flex; flex-direction: column; flex: 1; }
+        .workspace { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
 
-        #status-ticker {
+        /* INTEGRATED TOPBAR TIMER */
+        .ticker-bar {
             background: #1c2128;
             border-bottom: 1px solid var(--gh-border);
-            padding: 8px 15px;
-            font-size: 11px;
-            text-align: center;
-            font-weight: bold;
-            color: var(--p-red);
-            letter-spacing: 1px;
+            padding: 4px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-shrink: 0;
         }
+
+        #status-ticker {
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .override-btn {
+            background: #21262d;
+            border: 1px solid var(--gh-border);
+            color: #8b949e;
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .override-btn.active-bmas { border-color: var(--p-red); color: var(--p-red); }
+        .override-btn.active-mday { border-color: var(--p-gold); color: var(--p-gold); }
 
         .editors { display: flex; flex: 1; border-bottom: 1px solid var(--gh-border); }
         .pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--gh-border); }
-        .pane-label { background: #0d1117; padding: 6px 15px; font-size: 10px; color: #555; }
+        .pane-label { background: #0d1117; padding: 6px 15px; font-size: 11px; color: #555; font-weight: bold; }
 
         textarea {
             flex: 1;
             background: #010409;
             padding: 15px;
-            font-family: inherit;
+            font-family: "JetBrains Mono", monospace;
             font-size: 13px;
             resize: none;
             outline: none;
@@ -104,69 +102,50 @@
             color: var(--p-blue);
         }
 
-        #steve-logs {
-            height: 220px;
-            background: var(--rbx-log-bg);
-            border-top: 2px solid #444;
-            overflow-y: scroll;
-            padding: 10px;
-            font-size: 12px;
-        }
-
-        .log-entry { margin-bottom: 4px; }
-        .log-ts { color: #444; margin-right: 10px; }
+        .log-house-container { height: 240px; display: flex; flex-direction: column; flex-shrink: 0; }
+        #log-roof { background: #333; height: 30px; display: flex; align-items: center; padding: 0 15px; font-size: 11px; font-weight: bold; transition: 0.5s; border-bottom: 2px solid #000; }
+        #steve-logs { flex: 1; background: var(--rbx-log-bg); overflow-y: scroll; padding: 10px; font-size: 13px; }
     </style>
 </head>
 <body>
 
-<div id="geo-lock">
-    <h1 style="color: var(--p-red);">UNDER CONSTRUCTION</h1>
-    <p style="color: #8b949e;">THE SUMMER WILL MAKE A VACATION FOR THEM!</p>
-</div>
-
 <header>
     <div class="header-brand">
-        <span style="font-weight:600; letter-spacing: 1px;">POBFUS <span style="font-weight:200; color:#444;">1.13.100</span></span>
+        <span style="font-weight:bold;">POBFUS <span style="font-weight:normal; color:#444;">1.13.100</span></span>
     </div>
-    <button style="background:#238636; color:white; border:none; padding:5px 15px; border-radius:4px; cursor:pointer;" onclick="_011._dl()">EXECUTE</button>
+    <button style="background:#238636; color:white; border:none; padding:6px 18px; border-radius:4px; cursor:pointer; font-weight:bold;" onclick="_011._dl()">EXECUTE</button>
 </header>
 
 <div class="app-container">
     <aside>
         <div class="sidebar-section">
-            <h4>Override Controls</h4>
-            <div id="toggle-bmas" class="toggle-btn" onclick="_011.toggle('bmas')">
-                <span>Force Bytesmas</span>
-                <span class="status">OFF</span>
-            </div>
-            <div id="toggle-mday" class="toggle-btn" onclick="_011.toggle('mday')">
-                <span>Force Millennial Day</span>
-                <span class="status">OFF</span>
-            </div>
+            <h4>Update Archives</h4>
+            <div style="color:#8b949e; margin-bottom:4px;">v1.13.100 (Stable)</div>
+            <div style="color:#444; text-decoration: line-through;">v0.7 (Deprecated)</div>
         </div>
         <div class="sidebar-section">
-            <h4>Archives</h4>
-            <div style="color:#555;">v1.13.100 (Current)</div>
-            <div style="color:#333; text-decoration: line-through;">v0.7 (Deprecated 03.08.26)</div>
+            <h4>Household</h4>
+            <div style="color:#c9d1d9; cursor:pointer; margin-bottom:8px;" onclick="_011._remote()">📺 TV Remote</div>
+            <div style="color:#444;">Guest Room (PH House)</div>
         </div>
     </aside>
 
     <div class="workspace">
-        <div id="status-ticker">CALCULATING BYTESMAS PROXIMITY...</div>
+        <div class="ticker-bar">
+            <button id="btn-bmas" class="override-btn" onclick="_011.toggle('bmas')">BYTESMAS OVERRIDE</button>
+            <div id="status-ticker">INIT...</div>
+            <button id="btn-mday" class="override-btn" onclick="_011.toggle('mday')">MILLENNIAL DAY OVERRIDE</button>
+        </div>
+
         <div class="editors">
             <div class="pane">
-                <div class="pane-label">Source.lua</div>
-                <textarea id="input" spellcheck="false"></textarea>
+                <div class="pane-label">SOURCE.LUA</div>
+                <textarea id="input" spellcheck="false" placeholder="-- Input code..."></textarea>
             </div>
             <div class="pane">
-                <div class="pane-label">Obfuscated.lua</div>
-                <textarea id="output-view" readonly></textarea>
+                <div class="pane-label">OBFUSCATED.LUA</div>
+                <textarea id="output-view" readonly placeholder="-- Awaiting..."></textarea>
             </div>
         </div>
-        <div id="steve-logs"></div>
-    </div>
-</div>
-
-<script src="script.js"></script>
-</body>
-    </html>
+        
+        <div class
