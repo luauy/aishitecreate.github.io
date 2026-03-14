@@ -2,86 +2,142 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pobfus | Repository</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pobfus | v1.13.90 Base64-Icon</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #050505;
-            --cobalt: #2e5bff;
+            --bg: #010409;
+            --sidebar: #0d1117;
+            --gh-green: #238636;
+            --gh-green-glow: #2ea043;
+            --border: #30363d;
             --fira: 'Fira Code', monospace;
+            /* 1.13.90 Palette */
+            --kw: #ff7b72; --fn: #d2a8ff; --en: #bd93f9; --st: #a5d6ff;
         }
-        body { background-color: var(--bg); color: #c0c9e0; font-family: 'Inter', sans-serif; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        .sidebar {
-            width: 380px; background: #0a0a0a; border-right: 1px solid #1a1a1a; 
-            padding: 30px; display: flex; flex-direction: column;
+        body { background: var(--bg); color: #c9d1d9; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+        /* --- SQUIRCLE TOPBAR --- */
+        .top-nav { background: #161b22; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 25px; height: 60px; position: relative; }
+        .nav-content { display: flex; align-items: center; gap: 12px; position: relative; width: 100%; }
+        
+        .gh-logo { width: 28px; filter: invert(1); margin-right: 10px; }
+        .lua-logo { width: 32px; height: 32px; filter: brightness(0) invert(1); }
+
+        #squircle-follower {
+            position: absolute; height: 36px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px;
+            pointer-events: none; transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
         }
 
-        .header-icons { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .icon-git { width: 45px; filter: invert(1); }
-        .icon-lua { width: 45px; }
+        .nav-item { color: #f0f6fc; font-size: 13px; padding: 8px 12px; cursor: pointer; opacity: 0.6; z-index: 5; transition: 0.2s; }
+        .nav-item.active { opacity: 1; font-weight: 700; }
 
-        .version-tab {
-            background: #000; border: 1px solid #1a1a1a; border-radius: 4px;
-            padding: 10px; margin-top: 10px; font-family: var(--fira); font-size: 11px;
-        }
-        .version-label { color: #444; text-transform: uppercase; letter-spacing: 1px; font-size: 9px; }
-        .version-value { color: var(--cobalt); font-weight: bold; }
+        /* --- MAIN LAYOUT --- */
+        .main-container { display: flex; flex: 1; overflow: hidden; }
 
-        #output { 
-            flex: 1; background: #000; color: #79c0ff; padding: 40px; 
-            font-size: 11px; white-space: pre-wrap; overflow-y: auto; 
-            border-top: 1px solid #1a1a1a; font-family: var(--fira); 
+        .sidebar { width: 280px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .gh-btn {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid var(--border);
+            font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s;
+            background: #21262d; color: #c9d1d9; font-family: inherit;
         }
-        #status-terminal {
-            margin-top: 15px; width: 100%; height: 120px; background: #000; 
-            border: 1px solid #1a1a1a; border-radius: 4px; font-family: var(--fira); 
-            font-size: 10px; color: #444; padding: 10px; overflow-y: auto;
-        }
+        .btn-green { background: var(--gh-green); border-color: rgba(255,255,255,0.1); color: white; }
+        .btn-green:hover { background: var(--gh-green-glow); box-shadow: 0 0 12px rgba(35, 134, 54, 0.3); }
 
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .action-btn {
-            width: 100%; background: var(--cobalt); color: #fff; border: 0; 
-            padding: 15px; cursor: pointer; font-weight: 700; border-radius: 4px;
-            font-size: 12px; transition: opacity 0.2s;
-        }
-        .action-btn.secondary { background: #1a1a1a; color: #666; }
-        .action-btn:hover { opacity: 0.8; }
+        /* --- EDITOR & CONSOLE --- */
+        .editor-area { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+        .code-split { display: flex; flex: 2; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+        
+        #input { flex: 1; background: transparent; color: transparent; caret-color: #fff; padding: 25px; border: 0; outline: 0; font-size: 13px; font-family: var(--fira); resize: none; z-index: 2; }
+        #hl-layer { position: absolute; top: 25px; left: 25px; pointer-events: none; font-size: 13px; font-family: var(--fira); white-space: pre-wrap; word-wrap: break-word; }
+        #output { flex: 1; background: #010409; color: var(--gh-green-glow); padding: 25px; font-size: 11px; font-family: var(--fira); border-left: 1px solid var(--border); overflow-y: auto; }
+
+        .console { flex: 0.8; background: #010409; display: flex; flex-direction: column; }
+        .console-header { padding: 8px 25px; background: #0d1117; font-size: 10px; color: #8b949e; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        #steve-logs { flex: 1; padding: 12px 25px; font-family: var(--fira); font-size: 12px; color: #8b949e; overflow-y: auto; }
+        .steve-tag { color: var(--kw); font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="header-icons">
-            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" class="icon-git" alt="GitHub">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Lua-logo-nolabel.svg" class="icon-lua" alt="Lua">
-        </div>
-        
-        <h1 style="font-size:32px; margin:0; color:#fff; font-weight:700;">Pobfus</h1>
-        
-        <div class="version-tab">
-            <div class="version-label">Build Engine</div>
-            <div class="version-value">v1.13.0978-6</div>
-            <div style="margin-top:5px;" class="version-label">Protocol</div>
-            <div class="version-value">Legacy 10->27 Shift</div>
-        </div>
-        
-        <div style="background:var(--bg); border:1px solid #1a1a1a; padding:35px; border-radius:10px; display:flex; flex-direction:column; align-items:center; margin-top:20px;">
-            <div style="font-size:12px; color:var(--cobalt); font-family:var(--fira);" id="status">READY</div>
-            <div id="status-terminal"></div>
-        </div>
-
-        <div class="btn-group">
-            <button id="goBtn" class="action-btn">BUILD & ENCRYPT</button>
-            <button id="clearBtn" class="action-btn secondary">CLEAR BUFFER</button>
+    <div class="top-nav">
+        <div class="nav-content">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" class="gh-logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDBDMTE0LjYxNSAwIDAgMTE0LjYxNSAwIDI1NnMxMTQuNjE1IDI1NiAyNTYgMjU2IDI1Ni0xMTQuNjE1IDI1Ni0yNTZTzM5Ny4zODUgMCAyNTYgMHptMTI4IDM4NGE2NCA2NCAwIDEgMSAwLTEyOCA2NCA2NCAwIDAgMSAwIDEyOHpNMTI4IDEyOGE2NCA2NCAwIDEgMSAwIDEyOCA2NCA2NCAwIDAgMSAwLTEyOHptMTI4IDEyOGE2NCA2NCAwIDEgMSAwIDEyOCA2NCA2NCAwIDAgMSAwLTEyOHoiLz48L3N2Zz4=" class="lua-logo">
+            <div id="squircle-follower"></div>
+            <div class="nav-item active" onclick="syncNav(this)">Overview</div>
+            <div class="nav-item" onclick="syncNav(this)">Repositories</div>
+            <div class="nav-item" onclick="syncNav(this)">Projects</div>
+            <div class="nav-item" onclick="syncNav(this)">Milestones</div>
         </div>
     </div>
 
-    <div style="flex:1; display:flex; flex-direction:column;">
-        <textarea id="input" style="flex:1; background:#050505; color:#666; padding:40px; border:0; outline:0; font-size:14px; font-family:var(--fira); resize:none;" placeholder="-- Source code here..."></textarea>
-        <div id="output"></div>
+    <div class="main-container">
+        <div class="sidebar">
+            <button class="gh-btn btn-green" id="pushBtn">Obfuscate & Push</button>
+            <button class="gh-btn" id="dlBtn">Download Output</button>
+            <button class="gh-btn" id="clrBtn" style="color:var(--kw)">Clear Buffer</button>
+            
+            <div style="margin-top: auto; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 6px; border: 1px solid var(--border);">
+                <div style="font-size: 10px; color: #8b949e;">CURRENT VERSION</div>
+                <div style="font-size: 13px; font-weight: bold; color: var(--gh-green-glow);">v1.13.90-Agentic</div>
+            </div>
+        </div>
+
+        <div class="editor-area">
+            <div class="code-split">
+                <div id="hl-layer"></div>
+                <textarea id="input" spellcheck="false" placeholder="-- [ v1.13.90 Universe Pushing Active ]"></textarea>
+                <div id="output">-- [ Output Stream ]</div>
+            </div>
+            <div class="console">
+                <div class="console-header">SKIDDY STEVE // AGENTIC ANALYZER</div>
+                <div id="steve-logs">Line 1 Script: System check complete. Icon loaded via Base64.</div>
+            </div>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        const input = document.getElementById('input');
+        const hl = document.getElementById('hl-layer');
+        const steve = document.getElementById('steve-logs');
+        const squircle = document.getElementById('squircle-follower');
+
+        // Nav Squircle
+        function syncNav(el) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            squircle.style.width = (el.offsetWidth) + 'px';
+            squircle.style.left = (el.offsetLeft) + 'px';
+        }
+        window.onload = () => syncNav(document.querySelector('.nav-item'));
+
+        // 1.13.90 Highlighting
+        function paint() {
+            let code = input.value;
+            code = code.replace(/--.*$/gm, m => `<span style="color:#8b949e">${m}</span>`);
+            code = code.replace(/\b(local|function|if|then|else|end|return)\b/g, m => `<span style="color:var(--kw)">${m}</span>`);
+            code = code.replace(/\b(getfenv|setfenv|getgenv|hookmetamethod)\b/g, m => `<span style="color:var(--en); font-weight:bold;">${m}</span>`);
+            code = code.replace(/\b(print|warn|game|workspace|wait|Instance)\b/g, m => `<span style="color:var(--fn)">${m}</span>`);
+            code = code.replace(/('|")(.*?)('|")/g, m => `<span style="color:var(--st)">${m}</span>`);
+            hl.innerHTML = code;
+        }
+
+        input.oninput = () => { paint(); hl.scrollTop = input.scrollTop; };
+        input.onscroll = () => hl.scrollTop = input.scrollTop;
+
+        document.getElementById('pushBtn').onclick = () => {
+            steve.innerHTML = "Line 1 Script: Pushing build to v1.13.90 remote...";
+        };
+
+        document.getElementById('clrBtn').onclick = () => {
+            input.value = ""; paint();
+            steve.innerHTML = "Line 1 Script: Buffer cleared.";
+        };
+    </script>
 </body>
-</html>
+    </html>
