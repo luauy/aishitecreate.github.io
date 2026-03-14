@@ -3,191 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POBFUS | Millennial Elite 1.13.100</title>
+    <title>pobfus</title>
     <style>
         :root {
-            --gh-bg: #0d1117;
-            --gh-border: #30363d;
-            --gh-sidebar: #161b22;
-            --rbx-log-bg: #1b1b1b;
-            --p-green: #39ff14;
-            --p-blue: #79c0ff;
-            --p-red: #ff3131;
-            --p-gold: #ffcc00;
+            --bg: #0d1117;
+            --border: #30363d;
+            --accent: #ff4500;
+            --blue: #79c0ff;
+            --green: #39ff14;
         }
 
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; background-color: #010409; color: #c9d1d9; font-family: "Segoe UI", Arial, sans-serif; scroll-behavior: smooth; }
+        body, html { margin: 0; padding: 0; background-color: #010409; color: #c9d1d9; font-family: "JetBrains Mono", monospace; overflow: hidden; }
 
-        /* --- LANDING SECTION --- */
-        .welcome-screen {
-            height: 100vh;
+        /* --- CORE NOTIF --- */
+        #notif-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+        .core-notif {
+            background: rgba(13, 17, 23, 0.98);
+            border: 1px solid var(--accent);
+            border-left: 4px solid var(--accent);
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            background: radial-gradient(circle at center, #0d1117 0%, #010409 100%);
-            padding: 20px;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out forwards;
         }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .core-notif.fade-out { animation: slideOut 0.3s ease-in forwards; }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 
-        .welcome-screen h1 { font-size: 3rem; margin: 0; color: #fff; letter-spacing: -1px; }
-        .welcome-screen p { color: #8b949e; max-width: 600px; line-height: 1.6; }
-        .scroll-hint { margin-top: 50px; color: var(--p-gold); font-size: 12px; font-weight: bold; animation: bounce 2s infinite; }
+        /* --- LAYOUT --- */
+        .app-wrapper { height: 100vh; display: flex; flex-direction: column; }
+        header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; height: 50px; font-weight: bold; font-size: 12px; }
+        .container { display: flex; flex: 1; overflow: hidden; }
 
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
-
-        /* --- MAIN APP CONTAINER --- */
-        .app-wrapper { height: 100vh; display: flex; flex-direction: column; border-top: 1px solid var(--gh-border); }
+        aside { width: 260px; background: #161b22; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px; }
+        .section-title { font-size: 10px; color: #555; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
         
-        header {
-            background: var(--gh-bg);
-            border-bottom: 1px solid var(--gh-border);
-            padding: 0 15px;
-            display: flex;
-            align-items: center;
-            height: 48px;
-            flex-shrink: 0;
-        }
+        /* Language Selector */
+        .selector { display: flex; gap: 5px; margin-bottom: 20px; }
+        .sel-btn { flex: 1; background: #21262d; border: 1px solid var(--border); color: #8b949e; padding: 8px; font-size: 10px; cursor: pointer; }
+        .sel-btn.active { border-color: var(--accent); color: white; }
 
-        .app-container { display: flex; flex: 1; overflow: hidden; }
+        .pillar { font-size: 11px; display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: #8b949e; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: #333; }
+        .pillar.active .dot { background: var(--green); box-shadow: 0 0 5px var(--green); }
+        .pillar.core .dot { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
 
-        /* SIDEBAR CONTROLS */
-        aside {
-            width: 280px;
-            background: var(--gh-sidebar);
-            border-right: 1px solid var(--gh-border);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
-
-        .sidebar-section { padding: 20px; border-bottom: 1px solid var(--gh-border); }
-        .sidebar-section h4 { margin: 0 0 15px 0; color: #555; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; }
-
-        .btn-block {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            border: 1px solid transparent;
-            font-size: 12px;
-            transition: 0.2s;
-        }
-        .btn-primary { background: #238636; color: white; }
-        .btn-primary:hover { background: #2ea043; }
-        .btn-outline { background: transparent; border-color: var(--gh-border); color: #c9d1d9; }
-        .btn-outline:hover { background: #30363d; }
-
-        .workspace { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-
-        .ticker-bar {
-            background: #1c2128;
-            border-bottom: 1px solid var(--gh-border);
-            padding: 10px;
-            text-align: center;
-            font-family: monospace;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        /* EDITORS */
-        .editors { display: flex; flex: 1; min-height: 0; }
-        .pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--gh-border); }
-        .pane-label { background: #0d1117; padding: 8px 15px; font-size: 11px; color: #555; font-weight: bold; border-bottom: 1px solid var(--gh-border); }
-
-        textarea {
-            flex: 1;
-            background: #010409;
-            padding: 15px;
-            font-family: "JetBrains Mono", monospace;
-            font-size: 13px;
-            resize: none;
-            outline: none;
-            border: none;
-            color: var(--p-blue);
-        }
-
-        /* LOG DOCK */
-        .log-dock { height: 220px; background: var(--rbx-log-bg); border-top: 2px solid #333; display: flex; flex-direction: column; }
-        .log-header { background: #2a2a2a; height: 32px; display: flex; align-items: center; padding: 0 10px; gap: 15px; }
-        .log-tab { font-size: 11px; font-weight: bold; color: #8b949e; cursor: pointer; }
-        .log-tab.active { color: #fff; border-bottom: 2px solid var(--p-gold); }
-        .log-body { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; }
+        .main { display: flex; flex-direction: column; flex: 1; }
+        textarea { flex: 1; background: #010409; padding: 20px; font-family: inherit; font-size: 13px; border: none; outline: none; color: var(--blue); resize: none; line-height: 1.5; }
+        
+        .log-area { height: 180px; background: #000; border-top: 1px solid var(--border); padding: 15px; font-size: 11px; overflow-y: auto; }
+        .btn-run { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 11px; margin-top: auto; }
     </style>
 </head>
 <body>
 
-<section class="welcome-screen">
-    <div style="color: var(--p-gold); font-weight: bold; margin-bottom: 10px;">V1.13.100</div>
-    <h1>POBFUS ELITE</h1>
-    <p>From v0.1 Bytecode to the Millennial Build. Professional-grade Lua obfuscation inspired by the heritage of Iron Lung and the Pilot's vision.</p>
-    <button class="btn-block btn-primary" style="width: 200px;" onclick="document.getElementById('main-app').scrollIntoView()">ENTER WORKSPACE</button>
-    <div class="scroll-hint">SCROLL TO OPERATE ▼</div>
-</section>
+<div id="notif-container"></div>
 
-<div class="app-wrapper" id="main-app">
-    <header>
-        <div style="font-weight: bold; font-size: 14px;">POBFUS <span style="color:#555">MILLENNIAL</span></div>
-        <div id="status-ticker" style="margin-left: auto; color: var(--p-red);">SYNCING...</div>
-    </header>
+<div class="app-wrapper">
+    <header>SYSTEM PROTECTION UNIT</header>
 
-    <div class="app-container">
+    <div class="container">
         <aside>
-            <div class="sidebar-section">
-                <h4>Core Operations</h4>
-                <button class="btn-block btn-primary" onclick="_011._transform()">TRANSFORM SOURCE</button>
-                <button class="btn-block btn-outline" onclick="_011._dl()">DOWNLOAD BUILD</button>
-            </div>
-            
-            <div class="sidebar-section">
-                <h4>Technical Heritage</h4>
-                <div style="font-size: 11px; line-height: 1.5; color: #8b949e;">
-                    <b style="color: var(--p-blue);">v0.1</b>: Bytecode Alpha<br>
-                    <b style="color: var(--p-gold);">v0.7</b>: Iron Lung Era<br>
-                    <b style="color: var(--p-green);">v1.13.100</b>: Elite Millennial
-                </div>
+            <div class="section-title">Architecture</div>
+            <div class="selector">
+                <button id="btn-lua" class="sel-btn active" onclick="_011.setLang('lua')">LUA</button>
+                <button id="btn-luau" class="sel-btn" onclick="_011.setLang('luau')">LUAU</button>
             </div>
 
-            <div class="sidebar-section">
-                <h4>Heritage Repos</h4>
-                <div style="font-size: 10px; color: #58a6ff;">
-                    github.com/steveroblox/pobfus<br>
-                    github.com/legacy-lua/iron-lung
-                </div>
-            </div>
+            <div class="section-title">Pillars</div>
+            <div class="pillar core"><div class="dot"></div>MoonSec V3</div>
+            <div class="pillar active"><div class="dot"></div>Prometheus</div>
+            <div class="pillar active"><div class="dot"></div>Cambuscate</div>
 
-            <div class="sidebar-section" style="margin-top: auto; border: none;">
-                <p style="font-size: 10px; font-style: italic; color: var(--p-gold);">Special thanks to all predecessors.</p>
-            </div>
+            <button class="btn-run" onclick="_011._transform()">Initiate Protection</button>
         </aside>
 
-        <div class="workspace">
-            <div class="editors">
-                <div class="pane">
-                    <div class="pane-label">SOURCE.LUA</div>
-                    <textarea id="input" placeholder="-- Paste source code here..."></textarea>
-                </div>
-                <div class="pane">
-                    <div class="pane-label">ELITE_OUTPUT.LUA</div>
-                    <textarea id="output-view" readonly placeholder="-- Transformed code will appear here..."></textarea>
-                </div>
-            </div>
-
-            <div class="log-dock">
-                <div class="log-header">
-                    <div id="tab-sys" class="log-tab active" onclick="_011.switchTab('sys')">OUTPUT</div>
-                    <div id="tab-chat" class="log-tab" onclick="_011.switchTab('chat')">FAMILY CHAT</div>
-                </div>
-                <div id="steve-logs" class="log-body"></div>
-            </div>
+        <div class="main">
+            <textarea id="input" placeholder="-- Source Code..."></textarea>
+            <textarea id="output-view" readonly style="border-top: 1px solid var(--border);" placeholder="-- Protected Stream..."></textarea>
+            <div id="sys-logs" class="log-area"></div>
         </div>
     </div>
 </div>
 
 <script src="script.js"></script>
 </body>
-                        </html>
+</html>
