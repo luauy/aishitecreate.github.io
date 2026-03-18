@@ -2,62 +2,138 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>pobfus / pronar.cc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pez.bf | Krovixa Protocol</title>
     <style>
-        :root { --bg: #0d1117; --border: #30363d; --text: #c9d1d9; --accent: #39ff14; }
-        body { margin: 0; background: #010409; color: var(--text); font-family: -apple-system, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 10px; font-size: 14px; }
-        .container { display: flex; flex: 1; }
-        aside { width: 260px; background: var(--bg); border-right: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; }
-        .main { flex: 1; display: flex; flex-direction: column; }
-        textarea { flex: 1; background: transparent; color: #79c0ff; border: none; padding: 20px; font-family: "JetBrains Mono", monospace; font-size: 11px; outline: none; resize: none; }
-        #logs { height: 150px; background: #000; border-top: 1px solid var(--border); padding: 12px; font-family: monospace; font-size: 10px; overflow-y: auto; color: #8b949e; }
-        .btn-commit { background: #238636; color: white; border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px; transition: 0.2s; }
-        .btn-commit:hover { background: #2ea043; }
-        .label { font-size: 10px; color: #8b949e; text-transform: uppercase; margin: 15px 0 5px 0; letter-spacing: 1px; }
-        .pillar { font-size: 11px; color: var(--accent); margin-bottom: 3px; }
-        pre.sidebar-logo { font-size: 4px; line-height: 1.1; color: var(--accent); opacity: 0.8; pointer-events: none; }
+        :root {
+            --neon-red: #ff003c;
+            --dark-bg: #050505;
+            --term-green: #00ff41;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--term-green);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px var(--term-green);
+        }
+
+        .container {
+            width: 95%;
+            max-width: 900px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            background: #000;
+            color: var(--term-green);
+            border: 1px solid #333;
+            padding: 10px;
+            font-size: 12px;
+            resize: vertical;
+            outline: none;
+            word-break: break-all;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        #outputCode {
+            color: var(--neon-red);
+            border-color: var(--neon-red);
+            height: 350px;
+            margin-top: 15px;
+        }
+
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            background: #111;
+            color: var(--term-green);
+            border: 1px solid var(--term-green);
+            padding: 10px 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: var(--term-green);
+            color: #000;
+            box-shadow: 0 0 15px var(--term-green);
+        }
+
+        .btn-red {
+            border-color: var(--neon-red);
+            color: var(--neon-red);
+        }
+
+        .btn-red:hover {
+            background: var(--neon-red);
+            color: #fff;
+            box-shadow: 0 0 15px var(--neon-red);
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 10px;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <svg height="24" viewBox="0 0 16 16" width="24" fill="white"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
-    <span>pobfus / <b>pronar.cc</b></span>
-</header>
-
-<div class="container">
-    <aside>
-        <pre class="sidebar-logo">
-    ....      ..                       ..                                .x+=:.   
-  +^""888h. ~"888h               . uW8"         oec :                   z`    ^%  
- 8X.  ?8888X  8888f         u.   `t888         @88888     x.    .          .   <k 
-'888x  8888X  8888~   ...ue888b   8888   .     8"*88%   .@88k  z88u      .@8Ned8" 
-'88888 8888X   "88x:  888R Y888r  9888.z88N    8b.     ~"8888 ^8888    .@^%8888"  
- `8888 8888X  X88x.   888R I888>  9888  888E  u888888>   8888  888R   x88:  `)8b. 
-   `*` 8888X '88888X  888R I888>  9888  888E   8888R     8888  888R   8888N=*8888 
-  ~`...8888X  "88888  888R I888>  9888  888E   8888P     8888  888R    %8"    R88 
-   x8888888X.   `%8" u8888cJ888   9888  888E   *888>     8888 ,888B .   @8Wou 9%  
-  '%"*8888888h.   "   "*888*P"   .8888  888"   4888     "8888Y 8888"  .888888P`   
-  ~    888888888!`      'Y"       `%888*%"     '888      `Y"   'YP    `   ^"F     
-       X888^"""                      "`         88R                               
-       `88f                                     88>                               
-        88                                      48                                
-        ""                                      '8                                
-        </pre>
-        <div class="label">Pillars</div>
-        <div class="pillar">PRONAR.V3.STRICT</div>
-        <div class="pillar">NEWPROXY.LOCK</div>
-        <div class="pillar">ENV.SCRAMBLER</div>
-        <button class="btn-commit" onclick="core.commit()">Commit & Protect</button>
-    </aside>
-    <div class="main">
-        <textarea id="in" placeholder="-- Paste raw source code..."></textarea>
-        <textarea id="out" readonly style="color: #a5d6ff; border-top: 1px solid var(--border);" placeholder="-- Minified & Obfuscated output..."></textarea>
-        <div id="logs"></div>
+    <div class="header">
+        <h1>[ PEZ.BF PROTOCOL ]</h1>
+        <p>STEROIDS ENGINE V4.0 // KROVIXA</p>
     </div>
-</div>
 
-<script src="script.js"></script>
+    <div class="container">
+        <label>INPUT RAW LUAU:</label>
+        <textarea id="inputCode" placeholder="Paste your script here..."></textarea>
+
+        <div class="controls">
+            <button onclick="buildSteroids()">GENERATE PROTECTED</button>
+            <button class="btn-red" onclick="downloadScript()">DOWNLOAD .LUA</button>
+            <button onclick="document.getElementById('inputCode').value=''; document.getElementById('outputCode').value=''">CLEAR</button>
+        </div>
+
+        <label style="display:block; margin-top:20px;">PROTECTED OUTPUT (SKID-SKID EDITION):</label>
+        <textarea id="outputCode" readonly spellcheck="false"></textarea>
+    </div>
+
+    <div class="footer">
+        UNAUTHORIZED ACCESS IS PROHIBITED. BYPASSING FILTERS... OK.
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function downloadScript() {
+            const code = document.getElementById('outputCode').value;
+            if (!code) return alert("Generate code first.");
+            const blob = new Blob([code], {type: "text/plain"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "protected_krovixa.lua";
+            a.click();
+        }
+    </script>
 </body>
-            </html>
+</html>
