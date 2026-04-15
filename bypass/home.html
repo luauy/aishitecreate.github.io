@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bypass Utility | lupsup39</title>
+    <title>Bypass Engine | krovixa</title>
     <style>
         :root {
             --bg: #0d1117;
@@ -11,115 +11,109 @@
             --text: #c9d1d9;
             --accent: #58a6ff;
             --success: #3fb950;
+            --warning: #d29922;
         }
         body { 
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace; 
-            background: var(--bg); 
-            color: var(--text); 
-            display: flex; 
-            justify-content: center; 
-            padding-top: 50px;
-            margin: 0;
+            font-family: ui-monospace, monospace; 
+            background: var(--bg); color: var(--text); 
+            display: flex; justify-content: center; padding-top: 50px; margin: 0;
         }
-        .container { 
-            width: 90%; 
-            max-width: 600px; 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            padding: 24px;
-            background: #161b22;
-        }
-        h2 { font-size: 16px; margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .container { width: 95%; max-width: 650px; border: 1px solid var(--border); border-radius: 6px; padding: 24px; background: #161b22; }
         input { 
-            width: 100%; 
-            padding: 8px 12px; 
-            background: var(--bg); 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            color: white; 
-            box-sizing: border-box;
-            margin-bottom: 12px;
-            outline: none;
+            width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); 
+            border-radius: 6px; color: white; margin-bottom: 12px; box-sizing: border-box; outline: none;
         }
-        input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.3); }
         button { 
-            background: #21262d; 
-            color: #c9d1d9; 
-            border: 1px solid var(--border); 
-            padding: 5px 16px; 
-            font-size: 14px; 
-            border-radius: 6px; 
-            cursor: pointer;
+            background: #238636; color: white; border: 1px solid rgba(240,246,252,0.1); 
+            padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;
         }
-        button:hover { background: #30363d; border-color: #8b949e; }
-        #output { 
-            margin-top: 20px; 
-            padding: 12px; 
-            border-radius: 6px;
-            background: var(--bg); 
-            border: 1px solid var(--border);
-            display: none; 
-            word-break: break-all;
-            font-size: 13px;
+        button:disabled { background: #161b22; color: #8b949e; cursor: not-allowed; }
+        #console { 
+            margin-top: 20px; padding: 15px; border-radius: 6px; background: #010409; 
+            border: 1px solid var(--border); font-size: 12px; line-height: 1.6; max-height: 300px; overflow-y: auto;
         }
-        .proxy-tag { font-size: 10px; color: #8b949e; margin-top: 15px; }
+        .step-info { color: var(--accent); }
+        .step-wait { color: var(--warning); }
+        .step-success { color: var(--success); font-weight: bold; border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Link Bypasser</h2>
-    <input type="text" id="targetLink" placeholder="Paste link (Linkvertise, etc.)">
-    <button onclick="handleBypass()">Run Bypass</button>
+    <h2 style="font-size: 14px; margin-bottom: 20px; color: #8b949e;">SYSTEM://MULTISTEP_BYPASS_ENGINE</h2>
+    <input type="text" id="targetLink" placeholder="Enter Platoboost or Linkvertise URL...">
+    <button id="execBtn" onclick="startMultistep()">INITIALIZE_BYPASS</button>
     
-    <div id="output">
-        <div id="status" style="margin-bottom: 8px; color: var(--accent);">[WAITING]</div>
-        <div id="resultText"></div>
-    </div>
-
-    <div class="proxy-tag">
-        NETWORK: <span style="color: var(--success);">CORS_PROXY_ACTIVE</span> | ENGINE: adbypass.org
+    <div id="console" style="display: none;">
+        <div id="log"></div>
     </div>
 </div>
 
 <script>
-async function handleBypass() {
-    const linkInput = document.getElementById('targetLink').value;
-    const outputDiv = document.getElementById('output');
-    const statusText = document.getElementById('status');
-    const resultText = document.getElementById('resultText');
+let attempts = 0;
+const MAX_ATTEMPTS = 5;
 
-    if (!linkInput) return;
+function addLog(msg, type = 'info') {
+    const log = document.getElementById('log');
+    const div = document.createElement('div');
+    div.className = `step-${type}`;
+    div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    log.appendChild(div);
+    document.getElementById('console').scrollTop = document.getElementById('console').scrollHeight;
+}
 
-    outputDiv.style.display = "block";
-    statusText.innerText = "[PROCESSING]";
-    statusText.style.color = "var(--accent)";
-    resultText.innerText = "";
+async function startMultistep() {
+    const url = document.getElementById('targetLink').value;
+    const btn = document.getElementById('execBtn');
+    if (!url) return;
 
-    // The API URL from the adbypass.org engine
-    const targetApi = `https://api2.adbypass.org/bypass?url=${encodeURIComponent(linkInput)}`;
+    // Reset UI
+    attempts = 0;
+    document.getElementById('log').innerHTML = "";
+    document.getElementById('console').style.display = "block";
+    btn.disabled = true;
     
-    // The CORS proxy wrapper
-    const proxiedUrl = `https://corsproxy.io/?url=${encodeURIComponent(targetApi)}`;
+    processLink(url);
+}
+
+async function processLink(currentUrl) {
+    attempts++;
+    addLog(`Attempt ${attempts}: Processing target link...`, 'info');
+
+    const apiBase = `https://api2.adbypass.org/bypass?url=${encodeURIComponent(currentUrl)}`;
+    const proxiedUrl = `https://corsproxy.io/?url=${encodeURIComponent(apiBase)}`;
 
     try {
         const response = await fetch(proxiedUrl);
         const data = await response.json();
 
-        if (data.status === "success" && data.destination) {
-            statusText.innerText = "[SUCCESS]";
-            statusText.style.color = "var(--success)";
-            resultText.innerHTML = `<a href="${data.destination}" target="_blank" style="color: var(--accent); text-decoration: none;">${data.destination}</a>`;
+        if (data.status === "success") {
+            const result = data.destination || data.result;
+
+            // Check if the result is just another checkpoint
+            if (result.includes("platoboost.com/checkpoint") || result.includes("linkvertise.com/checkpoint")) {
+                if (attempts >= MAX_ATTEMPTS) {
+                    addLog("Error: Max steps reached. The bypasser is stuck in a loop.", "wait");
+                    return;
+                }
+                addLog("Checkpoint detected. Waiting 3 seconds for engine to refresh...", "wait");
+                setTimeout(() => processLink(result), 3000); // Wait and recurse
+            } else {
+                // Final URL reached
+                addLog(`BYPASS_COMPLETE: Destination found!`, 'success');
+                document.getElementById('log').innerHTML += `
+                    <div class="step-success">
+                        <a href="${result}" target="_blank" style="color: var(--accent);">${result}</a>
+                    </div>`;
+                document.getElementById('execBtn').disabled = false;
+            }
         } else {
-            statusText.innerText = "[ERROR]";
-            statusText.style.color = "#f85149";
-            resultText.innerText = data.message || "Link not supported.";
+            addLog(`Engine Error: ${data.message || "Unknown error"}`, "wait");
+            document.getElementById('execBtn').disabled = false;
         }
-    } catch (error) {
-        statusText.innerText = "[FATAL_ERROR]";
-        statusText.style.color = "#f85149";
-        resultText.innerText = "Check console for details.";
-        console.error("Fetch failed:", error);
+    } catch (err) {
+        addLog("Network Fail: Check CORS proxy or connection.", "wait");
+        document.getElementById('execBtn').disabled = false;
     }
 }
 </script>
