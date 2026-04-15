@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bypass Engine | krovixa</title>
+    <title>Bypass Utility | krovixa</title>
     <style>
         :root {
             --bg: #0d1117;
@@ -13,75 +13,47 @@
             --success: #3fb950;
             --warning: #d29922;
         }
-        body { 
-            font-family: ui-monospace, monospace; 
-            background: var(--bg); color: var(--text); 
-            display: flex; justify-content: center; padding-top: 50px; margin: 0;
-        }
-        .container { width: 95%; max-width: 650px; border: 1px solid var(--border); border-radius: 6px; padding: 24px; background: #161b22; }
-        input { 
-            width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); 
-            border-radius: 6px; color: white; margin-bottom: 12px; box-sizing: border-box; outline: none;
-        }
-        button { 
-            background: #238636; color: white; border: 1px solid rgba(240,246,252,0.1); 
-            padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;
-        }
-        button:disabled { background: #161b22; color: #8b949e; cursor: not-allowed; }
-        #console { 
-            margin-top: 20px; padding: 15px; border-radius: 6px; background: #010409; 
-            border: 1px solid var(--border); font-size: 12px; line-height: 1.6; max-height: 300px; overflow-y: auto;
-        }
-        .step-info { color: var(--accent); }
-        .step-wait { color: var(--warning); }
-        .step-success { color: var(--success); font-weight: bold; border-top: 1px solid var(--border); margin-top: 10px; padding-top: 10px; }
+        body { font-family: ui-monospace, monospace; background: var(--bg); color: var(--text); padding: 40px; display: flex; justify-content: center; }
+        .box { width: 100%; max-width: 600px; border: 1px solid var(--border); border-radius: 6px; padding: 20px; background: #161b22; }
+        input { width: 100%; padding: 10px; background: #0d1117; border: 1px solid var(--border); border-radius: 6px; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #21262d; border: 1px solid var(--border); color: var(--text); cursor: pointer; border-radius: 6px; font-weight: bold; }
+        button:hover { background: #30363d; }
+        #log { margin-top: 15px; font-size: 12px; border-top: 1px solid var(--border); padding-top: 10px; display: none; }
+        .relay-status { color: var(--warning); }
+        .final-link { color: var(--accent); display: block; margin-top: 10px; font-weight: bold; text-decoration: none; word-break: break-all; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2 style="font-size: 14px; margin-bottom: 20px; color: #8b949e;">SYSTEM://MULTISTEP_BYPASS_ENGINE</h2>
-    <input type="text" id="targetLink" placeholder="Enter Platoboost or Linkvertise URL...">
-    <button id="execBtn" onclick="startMultistep()">INITIALIZE_BYPASS</button>
-    
-    <div id="console" style="display: none;">
-        <div id="log"></div>
-    </div>
+<div class="box">
+    <h3 style="margin-top:0; font-size: 14px; color: #8b949e;">LUPSUP39 // PLATORELAY_BYPASSER</h3>
+    <input type="text" id="url" placeholder="Paste PlatoRelay / Platoboost link here...">
+    <button onclick="runBypass()">INITIALIZE_RELAY_BYPASS</button>
+
+    <div id="log"></div>
 </div>
 
 <script>
-let attempts = 0;
-const MAX_ATTEMPTS = 5;
+async function runBypass() {
+    const targetUrl = document.getElementById('url').value;
+    const logBox = document.getElementById('log');
+    if (!targetUrl) return;
 
-function addLog(msg, type = 'info') {
-    const log = document.getElementById('log');
-    const div = document.createElement('div');
-    div.className = `step-${type}`;
-    div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    log.appendChild(div);
-    document.getElementById('console').scrollTop = document.getElementById('console').scrollHeight;
+    logBox.style.display = "block";
+    logBox.innerHTML = `<div class="relay-status">[SYS] Analyzing relay sequence...</div>`;
+
+    // The logic: PlatoRelay often needs to be sent to a specific bypass engine 
+    // that mimics the "Relay" handshake.
+    await processStep(targetUrl, 1);
 }
 
-async function startMultistep() {
-    const url = document.getElementById('targetLink').value;
-    const btn = document.getElementById('execBtn');
-    if (!url) return;
+async function processStep(currentUrl, step) {
+    const logBox = document.getElementById('log');
+    logBox.innerHTML += `<div class="relay-status">[STEP ${step}] Querying relay server...</div>`;
 
-    // Reset UI
-    attempts = 0;
-    document.getElementById('log').innerHTML = "";
-    document.getElementById('console').style.display = "block";
-    btn.disabled = true;
-    
-    processLink(url);
-}
-
-async function processLink(currentUrl) {
-    attempts++;
-    addLog(`Attempt ${attempts}: Processing target link...`, 'info');
-
-    const apiBase = `https://api2.adbypass.org/bypass?url=${encodeURIComponent(currentUrl)}`;
-    const proxiedUrl = `https://corsproxy.io/?url=${encodeURIComponent(apiBase)}`;
+    // Wrap the API with your recommended CORS Proxy
+    const apiEndpoint = `https://api2.adbypass.org/bypass?url=${encodeURIComponent(currentUrl)}`;
+    const proxiedUrl = `https://corsproxy.io/?url=${encodeURIComponent(apiEndpoint)}`;
 
     try {
         const response = await fetch(proxiedUrl);
@@ -90,30 +62,19 @@ async function processLink(currentUrl) {
         if (data.status === "success") {
             const result = data.destination || data.result;
 
-            // Check if the result is just another checkpoint
-            if (result.includes("platoboost.com/checkpoint") || result.includes("linkvertise.com/checkpoint")) {
-                if (attempts >= MAX_ATTEMPTS) {
-                    addLog("Error: Max steps reached. The bypasser is stuck in a loop.", "wait");
-                    return;
-                }
-                addLog("Checkpoint detected. Waiting 3 seconds for engine to refresh...", "wait");
-                setTimeout(() => processLink(result), 3000); // Wait and recurse
+            // PlatoRelay Detection: If the result still contains 'relay' or 'checkpoint', we go again.
+            if (result.includes("platorelay") || result.includes("checkpoint")) {
+                logBox.innerHTML += `<div class="relay-status">[WAIT] Relay handshake detected. Retrying in 2s...</div>`;
+                setTimeout(() => processStep(result, step + 1), 2000);
             } else {
-                // Final URL reached
-                addLog(`BYPASS_COMPLETE: Destination found!`, 'success');
-                document.getElementById('log').innerHTML += `
-                    <div class="step-success">
-                        <a href="${result}" target="_blank" style="color: var(--accent);">${result}</a>
-                    </div>`;
-                document.getElementById('execBtn').disabled = false;
+                logBox.innerHTML += `<div style="color:var(--success)">[DONE] Relay bypassed successfully.</div>`;
+                logBox.innerHTML += `<a href="${result}" target="_blank" class="final-link">${result}</a>`;
             }
         } else {
-            addLog(`Engine Error: ${data.message || "Unknown error"}`, "wait");
-            document.getElementById('execBtn').disabled = false;
+            logBox.innerHTML += `<div style="color:#f85149">[ERR] Relay Engine: ${data.message || "Failed"}</div>`;
         }
-    } catch (err) {
-        addLog("Network Fail: Check CORS proxy or connection.", "wait");
-        document.getElementById('execBtn').disabled = false;
+    } catch (e) {
+        logBox.innerHTML += `<div style="color:#f85149">[FATAL] Proxy connection failed.</div>`;
     }
 }
 </script>
