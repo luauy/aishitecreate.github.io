@@ -1,0 +1,10 @@
+# Render.com Configuration
+
+commit:
+  message: "Add render.yaml for static site deployment"
+
+static:
+  include:
+    - '**/*'
+  publish: '/path-to-your-public-directory'
+  command: 'npm run build' # Adjust according to your build command
